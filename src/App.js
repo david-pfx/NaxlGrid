@@ -2,25 +2,21 @@ import React from 'react';
 import './App.css';
 import MainGrid from './MainGrid';
 import * as Data from './data-source';
-import { Component } from 'ag-grid-community';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      gridData: [ Data.testData() ],
-    }
+    Data.getTestData(sheet => {
+      this.state = {
+        sheets: [sheet],
+      }
+    })
   }
-  
+
   componentDidMount() {
-    Data.webData(data => {
-      this.setState({
-        gridData: this.state.gridData.concat({
-          columnDefs: Data.testData().columnDefs,
-          rowData: data,
-        })
-      });
-    });
+    Data.comicData(sheet => this.setState({ sheets: [ sheet ] }));
+    //Data.comicData(sheet => this.setState({ sheets: this.state.sheets.concat(sheet) }));
+    //Data.webData(sheet => this.setState({ sheets: this.state.sheets.concat(sheet) }));
   }
 
   render() {
@@ -30,8 +26,8 @@ class App extends React.Component {
           <p>header</p>
         </header>
         { 
-          this.state.gridData.map(data => 
-            <MainGrid gridData= { data } />
+          this.state.sheets.map((sheet,i) => 
+            <MainGrid key={i} sheet={ sheet } />
           )
         }
       </div>

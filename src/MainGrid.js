@@ -17,18 +17,18 @@ class MainGrid extends Component {
   }
 
   render() {
+    const style = {
+      height: 500,
+      width: 1000,
+    }
     return (
       <div
         className="ag-theme-balham"
-        style={{
-          height: '500px',
-          width: '600px'
-        }} 
-        >
+        style={style} >
         <AgGridReact
           onGridReady={params => this.gridApi = params.api}
-          columnDefs={this.props.gridData.columnDefs}
-          rowData={this.props.gridData.rowData}>
+          columnDefs={this.props.sheet.columnDefs}
+          rowData={this.props.sheet.rowData}>
         </AgGridReact>
       </div>
     );
