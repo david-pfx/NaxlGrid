@@ -1,4 +1,4 @@
-// main grid page for NaxlGrid
+// display block as tuple
 
 import React, { Component } from 'react';
 import { AgGridReact } from 'ag-grid-react';
@@ -7,18 +7,20 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 import './App.css';
 
-class MainGrid extends Component {
+class TupleBlock extends Component {
   constructor(props) {
     super(props);
     this.state = { }
   }
 
-  componentDidMount() {
-  }
-
   render() {
+    const cols = [{
+      headerName: "Key", field: "id"
+    }, {
+      headerName: "Value", field: "value"
+    }];
     const style = {
-      height: 500,
+      height: 130,
       width: 1000,
     }
     return (
@@ -27,12 +29,12 @@ class MainGrid extends Component {
         style={style} >
         <AgGridReact
           onGridReady={params => this.gridApi = params.api}
-          columnDefs={this.props.sheet.columnDefs}
-          rowData={this.props.sheet.rowData}>
+          columnDefs={cols}
+          rowData={this.props.block.rows}>
         </AgGridReact>
       </div>
     );
   }
 }
 
-export default MainGrid;
+export default TupleBlock;

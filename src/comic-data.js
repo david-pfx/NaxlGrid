@@ -1,4 +1,4 @@
-// Comics data table: simple array of objects
+// Comics data table: simple array of row objects
 
 export default [{
   "title": "Do Androids Dream Of Electric Sheep?",

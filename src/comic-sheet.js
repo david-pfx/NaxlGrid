@@ -42,13 +42,13 @@ export default [
     },{
         id: 'settings', 
         type: 'tuple', 
-        value: comic_tuple,
+        rows: comic_tuple,
     },{
         type: 'blank'
     },{
         id: 'data',
         type: 'table', 
         defs: comic_defs,
-        data: comic_data,
+        rows: comic_data,
     }
 ]
