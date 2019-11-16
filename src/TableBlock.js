@@ -7,11 +7,21 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 import './App.css';
 
-function colsToAgGrid(fields) {
-  return fields.map(f => {
+function colsToAgGrid(fields, transpose) {
+  return fields.map((f,x) => {
     let ret = {
       headerName: f.label,
       field: f.id,
+      cellStyle: { 
+        backgroundColor: (transpose && x == 0) ? 'orange': 'lightcyan', 
+        textAlign: 'left',
+        fontWeight: (transpose && x == 0) ? 'bold' : 'normal',
+        //verticalAlign: 'middle',
+      },
+      headerStyle: {
+        background: 'lightorange',
+        fontWeight: (transpose && x == 0) ? 'bold' : 'normal',
+      },
     }
     //if (f.width) ret.width = f.width;
     return ret;
@@ -35,8 +45,11 @@ class TableBlock extends Component {
   }
 
   render() {
+    const props = this.props;
+    const headerheight = 32;
+    const rowheight = 28;
     const style = {
-      height: 500,
+      height: Math.min(500, headerheight + props.rows.length * rowheight),
       width: 1000,
     }
     return (
@@ -45,9 +58,11 @@ class TableBlock extends Component {
         style={style} >
         <AgGridReact
           onGridReady={this.onGridReady}
-          columnDefs={colsToAgGrid(this.props.block.defs.fields)}
+          columnDefs={colsToAgGrid(props.cols, props.kind === 'tuple')}
           defaultColDef={{ resizable: true }}
-          rowData={this.props.block.rows}>
+          rowData={props.rows} 
+          headerHeight={props.kind==='tuple'?0:25}
+          rowHeight={25}>
         </AgGridReact>
       </div>
     );
