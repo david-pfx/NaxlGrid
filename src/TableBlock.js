@@ -6,29 +6,33 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 import './App.css';
+import Format from './format';
 
 function colsToAgGrid(fields, transpose) {
   return fields.map((f,x) => {
     let ret = {
       headerName: f.label,
       field: f.id,
+      //width: 100,
+      //width: f.width || 100,
+      //      width: f.width || f.label.length,
       cellStyle: { 
-        backgroundColor: (transpose && x == 0) ? 'orange': 'lightcyan', 
+        backgroundColor: (transpose && x === 0) ? 'orange': 'lightcyan', 
         textAlign: 'left',
-        fontWeight: (transpose && x == 0) ? 'bold' : 'normal',
+        fontWeight: (transpose && x === 0) ? 'bold' : 'normal',
         //verticalAlign: 'middle',
       },
-      headerStyle: {
-        background: 'lightorange',
-        fontWeight: (transpose && x == 0) ? 'bold' : 'normal',
-      },
+//      headerStyle: {
+//        background: 'lightorange',
+//        fontWeight: (transpose && x == 0) ? 'bold' : 'normal',
+//      },
     }
     //if (f.width) ret.width = f.width;
     return ret;
   });
 }
 
-class TableBlock extends Component {
+export default class TableBlock extends Component {
   constructor(props) {
     super(props);
     this.state = { }
@@ -41,7 +45,7 @@ class TableBlock extends Component {
     this.gridApi = params.api;
     this.gridcolumnApi = params.columnApi;
     //this.gridApi.sizeColumnsToFit();
-    this.gridcolumnApi.autoSizeColumns();
+    //this.gridcolumnApi.autoSizeColumns();
   }
 
   render() {
@@ -52,6 +56,14 @@ class TableBlock extends Component {
       height: Math.min(500, headerheight + props.rows.length * rowheight),
       width: 1000,
     }
+    const rowdata = props.rows.map(row => {
+      let newrow = {}
+      props.cols.map(col => {
+        newrow[col.id] = Format.format(col, row[col.id]);
+      });
+      return newrow;
+    });
+
     return (
       <div
         className="ag-theme-balham"
@@ -60,7 +72,7 @@ class TableBlock extends Component {
           onGridReady={this.onGridReady}
           columnDefs={colsToAgGrid(props.cols, props.kind === 'tuple')}
           defaultColDef={{ resizable: true }}
-          rowData={props.rows} 
+          rowData={rowdata} 
           headerHeight={props.kind==='tuple'?0:25}
           rowHeight={25}>
         </AgGridReact>
@@ -68,5 +80,4 @@ class TableBlock extends Component {
     );
   }
 }
-
-export default TableBlock;
+//export default TableBlock;
