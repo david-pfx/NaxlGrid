@@ -11,7 +11,7 @@ export let loadingSheet = [
 
 export let tuple_fields = [
   {
-    id: 'id', type: 'text', label: 'Key', width: 25, 
+    id: 'label', type: 'text', label: 'Label', width: 25, 
   },
   {
     id: 'value', type: 'text', label: 'Value', width: 100, 

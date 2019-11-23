@@ -1,5 +1,6 @@
 import React from 'react';
-import './App.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+//import './App.css';
 import TableBlock from './TableBlock';
 import * as Data from './data-source';
 

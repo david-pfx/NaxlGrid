@@ -26,20 +26,20 @@ const formatLib = {
 
     toFormatted: {
         hidden: d => '',
-        text: d => d,
+        text: d => '' + d,
         textmultiline: d => d,
-        boolean: d => d ? 'Yes' : 'No',
-        //boolean: d => <i className="glyphicon glyphicon-ok"></i>,
+        //boolean: d => d ? 'Yes' : 'No',
+        boolean: d => <i className="glyphicon glyphicon-ok"></i>,
         date: d => moment(d).format('L'),
         time: d => moment(d).format('LTS'),
         datetime: d => moment(d).format('L LTS'),
         integer: d => numeral(d).format('0,0'), // TODO: choose format
         decimal: d => numeral(d).format('0,0.0[000]'), // TODO: choose format
         money: d => numeral(d).format('$0,0.00'),
-        lov: (d,f) => {
-            const vv = f.list.find(v => v.id === d);
-            return vv ? vv.text : '[' + d + ']';
-        },
+        // lov: (d,list) => {
+        //     const vv = list.find(v => v.id === d);
+        //     return vv ? vv.text : '[' + d + ']';
+        // },
         color: d => (<div>
             <div className="evo-color-box"
                 style={{ backgroundColor: d }}
@@ -60,15 +60,25 @@ const formatLib = {
 
     isValidType: t => !!this.toFormatted(t),
 
-    format(field, data) {
-        return !data ? ''
-        : !this.toFormatted[field.type] ? 'bad type'
-        : this.toFormatted[field.type](data,field);
+    format(data, type, list) {
+        if (!data) return '';
+        if (type == 'lov') {
+            const vv = list.find(v => v.id === data);
+            return vv ? vv.text : '[' + data + ']';
+        }
+        if (!this.toFormatted[type]) return 'bad type';
+        return this.toFormatted[type](data);
+        // return !data ? ''
+        // : (type == 'lov') ? ({
+        //     const vv = list.find(v => v.id === d);
+        //     return vv ? vv.text : '[' + d + ']';
+        // }) : !this.toFormatted[field.type] ? 'bad type'
+        // : this.toFormatted[field.type](data,field);
     },
 
-    formatBrief(f, d) {
+    formatBrief(d, f) {
         return (f.type === 'json' && d) ? '<json>'
-        : this.fieldValue(f, d)
+        : this.format(d, f.type, f.list)
     },
 
 };

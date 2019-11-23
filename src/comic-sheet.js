@@ -5,25 +5,35 @@ import comic_data from './comic-data';
 
 var comic_tuple = [
     {
-        id: 'options', 
-        type: 'string', 
-        label: 'Options', 
-        value: "on off something nothing",
+        key: 'owner', 
+        label: 'Owner', 
+        type: 'text', 
+        value: 'Fred Smith',
     },{
-        id: 'factor', 
-        type: 'number', 
+        key: 'light', 
+        type: 'lov', 
+        label: 'Light', 
+        list: [
+            { id: 1, text: 'red' },
+            { id: 2, text: 'amber' },
+            { id: 3, text: 'green' },
+        ],
+        value: 2,
+    },{
+        key: 'factor', 
+        type: 'decimal', 
         label: 'Ratio factor', 
         value: 12345.6789,
     },{
-        id: 'start-date', 
+        key: 'start-date', 
         type: 'date', 
         label: 'Start date', 
         value: new Date(2019, 11, 11),
     },{
-        id: 'end-date', 
-        type: 'date', 
-        label: 'End date', 
-        value: new Date(2020, 11, 11),
+        key: 'deadline', 
+        type: 'datetime', 
+        label: 'Deadline', 
+        value: new Date(2020, 11, 11, 23, 59, 59),
     },
 ]
 
