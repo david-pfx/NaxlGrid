@@ -64,7 +64,7 @@ export default {
             lovicon: true,
             list: [
                 { id: 2, text: 'French', icon: 'flags/fr.png' },
-                { id: 1, text: 'American', icon: 'flags/us.png' }
+                { id: 1, text: 'English', icon: 'flags/us.png' }
             ]
         },
         {

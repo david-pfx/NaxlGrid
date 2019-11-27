@@ -12,8 +12,10 @@ import 'moment/locale/de'
 import 'moment/locale/es'
 
 const locale = null;  // config
-const filesUrl = '/'; // config
-const path = '/'; // config
+const imageUrl = '/image/'; // config
+const fileUrl = '/file/'; // config
+const classTrue = 'fas fa-check';
+const classFalse = 'fas fa-times';
 
 // Set the locale from the browser -- which may need to be configured
 moment.locale(locale || window.navigator.userLanguage || window.navigator.language)
@@ -24,33 +26,30 @@ const formatLib = {
     locale: moment.locale(),
     now: () => moment(),
 
+    // simple pure functions that format a value according to its type
+    // may return either string or JSX
     toFormatted: {
         hidden: d => '',
         text: d => '' + d,
         textmultiline: d => d,
-        //boolean: d => d ? 'Yes' : 'No',
-        boolean: d => <i className="glyphicon glyphicon-ok"></i>,
+        boolean: d => <i className={ d ? classTrue : classFalse }></i>,
         date: d => moment(d).format('L'),
         time: d => moment(d).format('LTS'),
         datetime: d => moment(d).format('L LTS'),
         integer: d => numeral(d).format('0,0'), // TODO: choose format
         decimal: d => numeral(d).format('0,0.0[000]'), // TODO: choose format
         money: d => numeral(d).format('$0,0.00'),
-        // lov: (d,list) => {
-        //     const vv = list.find(v => v.id === d);
-        //     return vv ? vv.text : '[' + d + ']';
-        // },
         color: d => (<div>
-            <div className="evo-color-box"
+            <div className="evo-color-box"      // TODO
                 style={{ backgroundColor: d }}
                 title={d} >
                 <span>{d}</span>
             </div>
         </div>),
         html: d => d,
-        image: d => <img src={filesUrl + d} className="img-thumbnail" alt="" />,
+        image: d => <img src={imageUrl + d} className="img-thumbnail" alt="" />,
         url: d => <a href={d} target="_blank" rel="noopener noreferrer">{d} </a>,
-        document: d => <a href={encodeURI(path+d)} target="_blank" rel="noopener noreferrer">{d} </a>, // TODO
+        document: d => <a href={encodeURI(fileUrl+d)} target="_blank" rel="noopener noreferrer">{d} </a>, // TODO
         email: d => <a href={'mailto:' + d}>{d}</a>,
         json: d => JSON.stringify(d, null, '\t'),
         /*else if(f.type===ft.lov && icon){
@@ -61,19 +60,13 @@ const formatLib = {
     isValidType: t => !!this.toFormatted(t),
 
     format(data, type, list) {
-        if (!data) return '';
-        if (type == 'lov') {
+        if (data === null || data === undefined) return '';
+        if (type === 'lov') {
             const vv = list.find(v => v.id === data);
             return vv ? vv.text : '[' + data + ']';
         }
         if (!this.toFormatted[type]) return 'bad type';
         return this.toFormatted[type](data);
-        // return !data ? ''
-        // : (type == 'lov') ? ({
-        //     const vv = list.find(v => v.id === d);
-        //     return vv ? vv.text : '[' + d + ']';
-        // }) : !this.toFormatted[field.type] ? 'bad type'
-        // : this.toFormatted[field.type](data,field);
     },
 
     formatBrief(d, f) {
