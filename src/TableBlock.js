@@ -14,7 +14,7 @@ export default class TableBlock extends Component {
   render() {
     const props = this.props;
     const columns = props.cols.map((f, x) => ({
-      id: x,
+      //id: x,
       text: f.label,
       dataField: f.id,
       headerStyle: {
@@ -23,6 +23,15 @@ export default class TableBlock extends Component {
       },
       formatter: (cell,row) => Format.format(cell, f.type, f.list),
     }));
+    columns.unshift({
+      text: 'Id',
+      dataField: 'xxx',
+      isDummyField: true,
+      headerStyle: {
+        backgroundColor: 'tomato',
+      },
+      formatter: (cell,row, rowIndex) => Format.format(rowIndex+1, 'integer'),
+    })
     
     const rowStyle = (row, rowIndex) => {
       return {
