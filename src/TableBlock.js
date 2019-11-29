@@ -13,8 +13,8 @@ export default class TableBlock extends Component {
 
   render() {
     const props = this.props;
-    const columns = props.cols.map((f, x) => ({
-      //id: x,
+    const rows = props.table.data;
+    const columns = props.table.fields.map((f, x) => ({
       text: f.label,
       dataField: f.id,
       headerStyle: {
@@ -41,7 +41,7 @@ export default class TableBlock extends Component {
     
     return <div >
         <BootstrapTable keyField='id'
-          data={this.props.rows}
+          data={rows}
           columns={columns}
           bordered={true}
           rowStyle={rowStyle}
