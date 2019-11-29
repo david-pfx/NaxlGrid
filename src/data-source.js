@@ -1,6 +1,6 @@
 // Wrap data sources
 
-import comic_sheet from './comic-sheet';
+import comic_sheet from './data/comic-sheet';
 
 export let loadingSheet = [
   {

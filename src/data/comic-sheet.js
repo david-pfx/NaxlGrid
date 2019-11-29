@@ -60,5 +60,6 @@ export default [
         type: 'table', 
         defs: comic_defs,
         rows: comic_data,
+        //rows: comic_data.map(row=>({ ...row, pix: getpix(row.pix) })),
     }
 ]
