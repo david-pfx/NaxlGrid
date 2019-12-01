@@ -14,14 +14,16 @@ export default class TableBlock extends Component {
   render() {
     const props = this.props;
     const rows = props.table.data;
+
     const columns = props.table.fields.map((f, x) => ({
       text: f.label,
       dataField: f.id,
       headerStyle: {
         backgroundColor: 'tomato',
-        hidden: true,
+        textAlign: 'center',
       },
       formatter: (cell,row) => Format.format(cell, f.type, f.list),
+      align: Format.textAlign(f.type),
     }));
     columns.unshift({
       text: 'Id',
@@ -29,13 +31,19 @@ export default class TableBlock extends Component {
       isDummyField: true,
       headerStyle: {
         backgroundColor: 'tomato',
+        textAlign: 'center',
+        width: '3rem',
+      },
+      style: {
+        backgroundColor: 'tomato',
       },
       formatter: (cell,row, rowIndex) => Format.format(rowIndex+1, 'integer'),
+      align: 'right',
     })
     
     const rowStyle = (row, rowIndex) => {
       return {
-        backgroundColor: (rowIndex % 2 === 0) ? 'moccasin' : 'yellowgreen',
+        backgroundColor: (rowIndex % 2 === 0) ? 'moccasin' : 'cornsilk',
       };
     }
     
@@ -52,4 +60,3 @@ export default class TableBlock extends Component {
       </div>
   }
 }
-//export default TableBlock;

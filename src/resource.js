@@ -1,5 +1,6 @@
 
 // https://flatuicolors.com/palette/au
+
 export const palette = [
   '#f6e58d', 
   '#ffbe76', 
@@ -22,3 +23,7 @@ export const palette = [
   '#130f40', 
   '#535c68', 
 ];
+
+export const pickColour = (pal,col) => {
+  return palette[col % palette.length];
+}
