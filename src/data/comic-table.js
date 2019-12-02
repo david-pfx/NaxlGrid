@@ -27,6 +27,7 @@ export default {
 
     // column information
     fields: [
+		{ id: "id", type: "integer", label: "Id", },
         { id: 'title', type: 'text', label: 'Title', required: true },
         { id: 'authors', type: 'text', label: 'Authors' },
         { id: 'genre', type: 'lov', label: 'Genre', list: genre_list },
@@ -44,6 +45,6 @@ export default {
         { id: 'pix', type: 'image', label: 'Cover' },
     ],
 
-    data: comic_data,
+    data: comic_data.map((row, x) => ({ ...row, id: x+1 })),
 }
 

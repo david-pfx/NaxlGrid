@@ -5,7 +5,10 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import Format from './format';
 
-export default class TableBlock extends Component {
+////////////////////////////////////////////////////////////////////////////////
+// View a table in grid format
+//
+export default class ViewGrid extends Component {
   constructor(props) {
     super(props);
     this.state = { }
@@ -15,31 +18,20 @@ export default class TableBlock extends Component {
     const props = this.props;
     const rows = props.table.data;
 
+    //const aggwidth = props.table.fields.reduce((acc,f) => acc + Format.relWidth(f.type));
+
     const columns = props.table.fields.map((f, x) => ({
       text: f.label,
       dataField: f.id,
       headerStyle: {
         backgroundColor: 'tomato',
         textAlign: 'center',
+        width: (x === 0) ? '3rem' : Format.relWidth(f.type) + '%',
       },
+      style: x === 0 ? { backgroundColor: 'tomato' } : {},
       formatter: (cell,row) => Format.format(cell, f.type, f.list),
       align: Format.textAlign(f.type),
     }));
-    columns.unshift({
-      text: 'Id',
-      dataField: 'xxx',
-      isDummyField: true,
-      headerStyle: {
-        backgroundColor: 'tomato',
-        textAlign: 'center',
-        width: '3rem',
-      },
-      style: {
-        backgroundColor: 'tomato',
-      },
-      formatter: (cell,row, rowIndex) => Format.format(rowIndex+1, 'integer'),
-      align: 'right',
-    })
     
     const rowStyle = (row, rowIndex) => {
       return {
@@ -47,7 +39,7 @@ export default class TableBlock extends Component {
       };
     }
     
-    return <div >
+    return <div>
         <BootstrapTable keyField='id'
           data={rows}
           columns={columns}

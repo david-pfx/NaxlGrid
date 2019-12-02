@@ -8,17 +8,19 @@ export default {
 
   // column information
   fields: [
-  { id: 'owner', type: 'text', label: 'Owner' },
-  { id: 'light', type: 'lov',  label: 'Light',  list: [
-          { id: 1, text: 're  ' },
-          { id: 2, text: 'amber' },
-          { id: 3, text: 'green' },
-      ]},
-  { id: 'factor',     type: 'decimal',  label: 'Ratio factor' },
-  { id: 'startdate',  type: 'date',     label: 'Start date' },
-  { id: 'deadline',   type: 'datetime', label: 'Deadline' },
+		{ id: "id", type: "integer", label: "Id", },
+    { id: 'owner', type: 'text', label: 'Owner' },
+    { id: 'light', type: 'lov',  label: 'Light',  list: [
+            { id: 1, text: 're  ' },
+            { id: 2, text: 'amber' },
+            { id: 3, text: 'green' },
+        ]},
+    { id: 'factor',     type: 'decimal',  label: 'Ratio factor' },
+    { id: 'startdate',  type: 'date',     label: 'Start date' },
+    { id: 'deadline',   type: 'datetime', label: 'Deadline' },
   ],
   data: [{
+    id: 1,
     owner: 'Fred Smith',
     light: 2,
     factor: 12345.6789,

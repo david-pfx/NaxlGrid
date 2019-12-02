@@ -4,8 +4,11 @@
 import React, { Component } from 'react';
 import Card, { CardBody } from 'react-bootstrap/Card'
 
-import TableGrid from './ViewGrid';
+import ViewGrid from './ViewGrid';
 
+////////////////////////////////////////////////////////////////////////////////
+// View a block of some kind
+//
 export default class ViewBlock extends Component {
   constructor(props) {
     super(props);
@@ -21,9 +24,9 @@ export default class ViewBlock extends Component {
       return (
         <Card style={cardStyle}>
           <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
-          { block.notes.map(n =>
-            <Card.Text>
-              {n}
+          { block.notes.map((note,x) =>
+            <Card.Text key={x}>
+              {note}
             </Card.Text>
           )}
         </Card> 
@@ -33,8 +36,8 @@ export default class ViewBlock extends Component {
       return (
         <Card style={cardStyle}>
           <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
-          { block.tables.map(t =>
-            <TableGrid table={t}/>
+          { block.tables.map((table,x) =>
+            <ViewGrid key={x} table={table} dataset={block.tables.dataset} />
           )}
         </Card> 
       )

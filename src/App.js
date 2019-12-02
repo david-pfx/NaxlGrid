@@ -7,15 +7,19 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sheet: Data.loadingSheet
+      sheet: Data.home_sheet
     }
   }
 
+  // function to load a new sheet
+  getSheet = (id) => Data.getSheet(id, sheet => this.setState({ sheet: sheet }));
+
   componentDidMount() {
-    Data.getSheet(sheet => this.setState({ sheet: sheet }));
+    //this.getSheet('comic');
+    this.getSheet('music');
   }
 
   render() {
-    return <ViewSheet sheet={this.state.sheet} />;
+    return <ViewSheet sheet={this.state.sheet} selectSheet={this.getSheet} />;
   }
 }

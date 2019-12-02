@@ -67,9 +67,16 @@ const formatLib = {
 
     format(data, type, list) {
         if (data === null || data === undefined) return '';
+        // for simple lookup, just a list of ids and values
         if (type === 'lov') {
             const vv = list && list.find(v => v.id === data);
             return vv ? <Badge pill variant="primary" style={{ backgroundColor: Resource.pickColour(0,data)}}>{vv.text}</Badge> 
+                : '[' + data + ']';
+        }
+        // for table lookup, list is the target table
+        if (type === 'lookup' && list) {
+            const row = list.data.find(v => v.id === data);
+            return row ? <span style={{ color: 'green' }}>{this.format(row[list.field.id], list.field.type)}</span>
                 : '[' + data + ']';
         }
         if (!this.toFormatted[type]) return 'bad type';
@@ -83,8 +90,15 @@ const formatLib = {
 
     textAlign: (type) => {
         return (isNumeric(type) || isDate(type)) ? 'right'
-        : 'boolean'.includes(type) ? 'center' : 'left';
-    }
+        : 'boolean,lov'.includes(type) ? 'center' : 'left';
+    },
+
+    relWidth: (type) => {
+        return 'integer,boolean'.includes(type) ? 10
+        : isNumeric(type) || isDate(type) ? 20 
+        : type === 'lov' ? 30
+        : 40;
+    },
 
 };
 export default formatLib;
