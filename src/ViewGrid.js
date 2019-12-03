@@ -9,11 +9,6 @@ import Format from './format';
 // View a table in grid format
 //
 export default class ViewGrid extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { }
-  }
-
   render() {
     const props = this.props;
     const rows = props.table.data;
@@ -28,7 +23,10 @@ export default class ViewGrid extends Component {
         textAlign: 'center',
         width: (x === 0) ? '3rem' : Format.relWidth(f.type) + '%',
       },
-      style: x === 0 ? { backgroundColor: 'tomato' } : {},
+      style: x === 0 ? { 
+        backgroundColor: 'tomato',
+        fontWeight: 'bold',
+      } : {},
       formatter: (cell,row) => Format.format(cell, f.type, f.list),
       align: Format.textAlign(f.type),
     }));

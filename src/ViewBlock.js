@@ -5,16 +5,12 @@ import React, { Component } from 'react';
 import Card, { CardBody } from 'react-bootstrap/Card'
 
 import ViewGrid from './ViewGrid';
+import ViewTranspose from './ViewTranspose';
 
 ////////////////////////////////////////////////////////////////////////////////
 // View a block of some kind
 //
 export default class ViewBlock extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { }
-  }
-
   render() {
     const block = this.props.block;
     const cardStyle = { backgroundColor: 'cyan' };
@@ -38,6 +34,16 @@ export default class ViewBlock extends Component {
           <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
           { block.tables.map((table,x) =>
             <ViewGrid key={x} table={table} dataset={block.tables.dataset} />
+          )}
+        </Card> 
+      )
+    }
+    if (block.kind === 'tuple') {
+      return (
+        <Card style={cardStyle}>
+          <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
+          { block.tables.map((table,x) =>
+            <ViewTranspose key={x} table={table} dataset={block.tables.dataset} />
           )}
         </Card> 
       )

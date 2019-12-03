@@ -12,11 +12,6 @@ import Button from 'react-bootstrap/Button'
 import ViewBlock from './ViewBlock';
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { }
-  }
-
   render() {
     const sheet = this.props.sheet;
     const titleBgColor = 'yellow';

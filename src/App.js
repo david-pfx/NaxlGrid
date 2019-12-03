@@ -16,7 +16,8 @@ export default class App extends React.Component {
 
   componentDidMount() {
     //this.getSheet('comic');
-    this.getSheet('music');
+    this.getSheet('music2');
+    //Data.testData();
   }
 
   render() {
