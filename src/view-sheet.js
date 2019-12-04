@@ -9,7 +9,7 @@ import Col from 'react-bootstrap/Col'
 import Image from 'react-bootstrap/Image'
 import Button from 'react-bootstrap/Button'
 
-import ViewBlock from './ViewBlock';
+import ViewBlock from './view-block';
 
 export default class App extends React.Component {
   render() {
@@ -26,8 +26,9 @@ export default class App extends React.Component {
               <Row>
                 <Image src="n-logo.png" height="40" style={{ marginLeft: 'auto', marginRight: 'auto' }}/>
               </Row>
-              { Data.allSheets.map(s => <Row key={s.id}>
-                <Button block style={{ margin: '1rem'}} onClick={e => this.props.selectSheet(s.id,e)}>{ s.label }</Button>
+              { // A button for each sheet in the left sidebar
+                Data.allSheets.map(s => <Row key={s.id}>
+                <Button block style={{ margin: '0.3rem'}} onClick={e => this.props.selectSheet(s.id,e)}>{ s.label }</Button>
               </Row>) }
           </Col>
           <Col> 

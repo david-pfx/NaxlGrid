@@ -15,7 +15,8 @@ const genre_list = [
 
 export default {
 	id: "track",
-	title: "Tracks",
+	label: 'Tracks',
+	title: "Music tracks",
   icon: "music.png",
 	fields: [
 		{ id: "id", type: "integer", label: "Id", },

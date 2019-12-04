@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ViewSheet from './ViewSheet';
+import ViewSheet from './view-sheet';
 import * as Data from './data-source';
 
 export default class App extends React.Component {

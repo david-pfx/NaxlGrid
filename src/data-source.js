@@ -26,7 +26,7 @@ const comic_dataset = {
   title: 'Comic Novels',
   description: 'Records and notes on a collection of comic novels', 
   notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  tables: connectTables([ settings_table, comic_table ]),
+  tables: connectTables([ transposeTable(settings_table), comic_table ]),
 }
 
 // music
@@ -55,7 +55,8 @@ function getSheetAll(ds) {
   title: ds.title,
   blocks: [
     { kind: 'note', title: ds.description, notes: ds.notes },
-    { kind: 'table', title: 'The actual data tables', tables: ds.tables },
+      ...ds.tables.map(t => ({ kind: t.transpose ? 'tuple' : 'table', title: t.title, table: t })),
+    //{ kind: 'table', title: 'The actual data tables', tables: ds.tables },
   ]}
 }
 
@@ -66,8 +67,8 @@ function getSheetBoth(ds, table) {
   label: ds.label + ' 2',
   title: table.label,
   blocks: [
-    { kind: 'table', title: 'Regular table', tables: [ table ] },
-    { kind: 'tuple', title: 'Transposed table', tables: [ transposeTable(table) ] },
+    { kind: 'table', title: 'Regular table', table: table },
+    { kind: 'tuple', title: 'Transposed table', table: transposeTable(table) },
   ]}
 }
 
@@ -99,7 +100,7 @@ export function transposeTable(table) {
   });
   
   //console.log('transpose', tfields, tdata);
-  return { ...table, tfields: tfields, tdata: tdata };
+  return { ...table, transpose: true, tfields: tfields, tdata: tdata };
 }
 
 export function testData() {

@@ -4,7 +4,7 @@ import album_data from './album-data'
 
 export default {
 	id: "album",
-	title: "Albums",
+	title: "Music Albums",
   icon: "cd.png",
 	fields: [
 		{ id: "id", type: "integer", label: "Id", },

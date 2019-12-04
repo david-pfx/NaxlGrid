@@ -4,6 +4,7 @@ export default {
   // heading information
   id: 'settings',
   label: 'Settings',
+  title: 'Current settings',
   comment: 'This is a single row table of settings',
 
   // column information
