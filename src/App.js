@@ -15,7 +15,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ sheet: Data.getSheetList()[1] });
+    //this.setState({ sheet: Data.getSheetList()[1] });
     //Data.testData();
   }
 

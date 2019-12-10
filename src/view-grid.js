@@ -18,8 +18,9 @@ export default function(props) {
     headerStyle: {
       backgroundColor: 'tomato',
       textAlign: 'center',
-      width: Format.relWidth(f.type) + '%',
-      //width: (x === 0) ? '3rem' : Format.relWidth(f.type) + '%',
+      width: f.width ? f.width + '%' 
+        : (x === 0) ? '3rem' 
+        : Format.relWidth(f.type) + '%',
     },
     style: x === 0 ? {
       backgroundColor: 'tomato',

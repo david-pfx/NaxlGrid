@@ -57,12 +57,12 @@ const home_table = {
   title: 'Available datasets',
   icon: 'table.gif',
   fields: [
-    { id: 'id', type: 'text', label: 'Id', },
+    { id: 'id', type: 'text', label: 'Id', width: 10, },
     { id: 'label', type: 'text', label: 'Label', },
     { id: 'title', type: 'text', label: 'Title', },
     { id: 'description', type: 'text', label: 'Description', },
-    { id: 'notes', type: 'text', label: 'Notes', },
-    { id: 'tables', type: 'text', label: 'Tables', },
+    { id: 'notes', type: 'array', label: 'Notes', },
+    { id: 'tables', type: 'array', label: 'Tables', },
   ],
   data: store,
 }
@@ -72,13 +72,14 @@ const home_table = {
 // set up all initial data
 function addAll() {
   let cds = addDataSet({
-    id: 'comics', label: 'Comics', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
+    id: 'novels', label: 'Novels', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
   });
   [transposeTable(settings_table), comic_table].forEach(table => {
     addTable(cds, table);
   });
   connectTables(cds.tables);
+  addSheet(cds, getSheetPair(cds, settings_table));
 
   let mds = addDataSet({
     id: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 
@@ -102,7 +103,7 @@ function getSheetHome() {
     label: 'Home',
     title: 'Home',
     blocks: [
-      { kind: 'note', title: 'No data sheet loaded.', notes: [ 'Please select a data sheet from the list.' ] },
+      { kind: 'note', title: 'No dataset loaded.', notes: [ 'Please select a dataset from the list.' ] },
       { kind: 'table', title: 'Available data sets.', table: home_table },
     ],
   }
@@ -125,7 +126,7 @@ function getSheetDataset(ds) {
 function getSheetPair(ds, table) {
   return {
     dataset: ds,
-    label: ds.label + ' x2',
+    label: table.label + ' x2',
     title: table.title,
     blocks: [
       { kind: 'table', title: 'Regular table', table: table },

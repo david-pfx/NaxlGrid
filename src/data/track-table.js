@@ -22,7 +22,7 @@ export default {
 		{ id: "id", type: "integer", label: "Id", },
 		{ id: "name", type: "text", label: "Name", required: true, },
 		{ id: "album", type: "lookup", label: "Album", target: "album.title" },
-		{ id: "length", type: "text", label: "Length", },
+		{ id: "length", type: "text", label: "Length", width: 10 },
 		{ id: "genre", type: "lov", label: "Genre", list: genre_list,
 		}
 	],

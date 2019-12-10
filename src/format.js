@@ -39,6 +39,7 @@ const formatSimple = {
     integer: d => numeral(d).format('0,0'), 
     decimal: d => numeral(d).format('0,0.0[000]'),
     money: d => numeral(d).format('$0,0.00'),
+    array: d => `${d.length} items`,
     color: d => (<div>
         <div className="evo-color-box"      // TODO
             style={{ backgroundColor: d }}
