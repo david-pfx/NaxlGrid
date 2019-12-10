@@ -6,105 +6,143 @@ import settings_table from './data/settings-table';
 import album_table from './data/album-table';
 import artist_table from './data/artist-table';
 import track_table from './data/track-table';
-
-////////////////////////////////////////////////////////////////////////////////
-// data structures
-
-// the default start sheet
-export const home_sheet = {
-  label: 'Home',
-  title: 'Home',
-  blocks: [
-    { kind: 'note', title: 'No data sheet loaded.', notes: [ 'Please select a data sheet from the list.' ] },
-  ],
-}
-
-// comics 
-const comic_dataset = {
-  id: 'comics',
-  label: 'Comics',
-  title: 'Comic Novels',
-  description: 'Records and notes on a collection of comic novels', 
-  notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  tables: connectTables([ transposeTable(settings_table), comic_table ]),
-}
-
-// music
-const music_dataset = {
-  id: 'music',
-  label: 'Music',
-  title: 'Music Collection',
-  description: 'A collection of musical albums, with artist and track', 
-  notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  tables: connectTables([ album_table, artist_table, track_table ]),
-}
-
-// all initial sheets
-const all_sheets = [
-  { id: 'home', sheet: home_sheet },
-  { id: 'comic', sheet: getSheetAll(comic_dataset) },
-  { id: 'music', sheet: getSheetAll(music_dataset) },
-  { id: 'music2', sheet: getSheetBoth(music_dataset, album_table) },
-]
-
-// construct a sheet for the whole dataset
-function getSheetAll(ds) {
-  return {
-  dataset: ds,
-  label: ds.label,
-  title: ds.title,
-  blocks: [
-    { kind: 'note', title: ds.description, notes: ds.notes },
-      ...ds.tables.map(t => ({ kind: t.transpose ? 'tuple' : 'table', title: t.title, table: t })),
-    //{ kind: 'table', title: 'The actual data tables', tables: ds.tables },
-  ]}
-}
-
-// construct a sheet for a single table
-function getSheetBoth(ds, table) {
-  return {
-  dataset: ds,
-  label: ds.label + ' 2',
-  title: table.label,
-  blocks: [
-    { kind: 'table', title: 'Regular table', table: table },
-    { kind: 'tuple', title: 'Transposed table', table: transposeTable(table) },
-  ]}
-}
+//import { get } from 'http';
 
 ////////////////////////////////////////////////////////////////////////////////
 // exports
 
-// list of all sheets, suitable for menu access
-export const allSheets = all_sheets.map(s => ({ id: s.id, label: s.sheet.label }));
-
-// get a sheet by ID
-export function getSheet(sheet, cb) {
-  cb(all_sheets.find(s => s.id === sheet).sheet);
+// get a list of sheets for this dataset
+export function getSheetList(ds) {
+  return (ds) ? [
+    getSheetHome(),
+    getSheetDataset(ds),
+    ...ds.tables.map(t => getSheet(ds, t)),
+    ...ds.sheets,
+  ] : [
+    getSheetHome(),
+    ...home_table.data.map(d => getSheetDataset(d)),
+  ]
 }
 
-export function transposeTable(table) {
-  // transpose fields: column name then one per row
-  const tfields = [
-    { id: "id", type: "text", label: "Name", }
-  ].concat(table.data.map(d => (
-    { id: d.id + '', type: 'transpose', label: d.id + '' }
-  )));
+////////////////////////////////////////////////////////////////////////////////
 
-  // transpose data: one row per column
-  const tdata = table.fields.slice(1).map(f => {
-    return table.data.reduce((acc, d) => {
-      acc[d.id] = d[f.id];
-      return acc;
-    }, { id: f.label });
+// the store is simply a list of data sets
+let store = [];
+
+export const setupStore = addAll();
+
+function addDataSet(ds) {
+  store.push(ds);
+  if (!ds.tables) ds.tables = [];
+  if (!ds.sheets) ds.sheets = [];
+  return ds;
+}
+
+function addTable(ds, table) {
+  ds.tables.push(table);
+  return table;
+}
+
+function addSheet(ds, sheet) {
+  ds.sheets.push(sheet);
+  return sheet;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// home table
+const home_table = {
+  id: 'home',
+  label: 'Home',
+  title: 'Available datasets',
+  icon: 'table.gif',
+  fields: [
+    { id: 'id', type: 'text', label: 'Id', },
+    { id: 'label', type: 'text', label: 'Label', },
+    { id: 'title', type: 'text', label: 'Title', },
+    { id: 'description', type: 'text', label: 'Description', },
+    { id: 'notes', type: 'text', label: 'Notes', },
+    { id: 'tables', type: 'text', label: 'Tables', },
+  ],
+  data: store,
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// set up all initial data
+function addAll() {
+  let cds = addDataSet({
+    id: 'comics', label: 'Comics', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
+    notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
   });
-  
-  //console.log('transpose', tfields, tdata);
-  return { ...table, transpose: true, tfields: tfields, tdata: tdata };
+  [transposeTable(settings_table), comic_table].forEach(table => {
+    addTable(cds, table);
+  });
+  connectTables(cds.tables);
+
+  let mds = addDataSet({
+    id: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 
+    notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
+  });
+  [ album_table, artist_table, track_table ].forEach(table => {
+    addTable(mds, table);
+  });
+  connectTables(mds.tables);
+
+  return true;
 }
 
-export function testData() {
-  transposeTable(comic_table);
+////////////////////////////////////////////////////////////////////////////////
+// sheets
+
+// the default start sheet
+function getSheetHome() {
+  return {
+    //dataset: home_table,
+    label: 'Home',
+    title: 'Home',
+    blocks: [
+      { kind: 'note', title: 'No data sheet loaded.', notes: [ 'Please select a data sheet from the list.' ] },
+      { kind: 'table', title: 'Available data sets.', table: home_table },
+    ],
+  }
+}
+
+// construct a sheet for the whole dataset
+function getSheetDataset(ds) {
+  return {
+    dataset: ds,
+    label: ds.label,
+    title: ds.title,
+    blocks: [
+      { kind: 'note', title: ds.description, notes: ds.notes },
+        ...ds.tables.map(t => ({ kind: t.transpose ? 'tuple' : 'table', title: t.title, table: t })) 
+    ],
+  }
+}
+
+// construct a sheet pair for a single table
+function getSheetPair(ds, table) {
+  return {
+    dataset: ds,
+    label: ds.label + ' x2',
+    title: table.title,
+    blocks: [
+      { kind: 'table', title: 'Regular table', table: table },
+      { kind: 'tuple', title: 'Transposed table', table: transposeTable(table) },
+  ]}
+}
+
+// construct a sheet for a single table
+function getSheet(ds, table) {
+  return {
+    dataset: ds,
+    label: table.label,
+    title: table.title,
+    blocks: [
+      { kind: table.transpose ? 'tuple' : 'table', title: table.title, table: table },
+      //{ kind: 'table', title: 'Regular table', table: table },
+  ]}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -131,17 +169,22 @@ function connectTables(tables) {
   return tables;
 }
 
-//const all_datasets = [ comic_dataset, music_dataset ];
+// add transpose fields to the table
+function transposeTable(table) {
+  // transpose fields: column name then one per row
+  const tfields = [
+    { id: 'id', type: 'text', label: 'Name', }
+  ].concat(table.data.map(d => (
+    { id: d.id + '', type: 'transpose', label: d.id + '' }
+  )));
 
-// export function findTable(ds, idvalue) {
-//   return ds.tables.find(t => t.id === idvalue);
-// }
-
-// export function findRow(table, idvalue) {
-//   return table.find(row => row.id === idvalue);
-// }
-
-// export function findField(table, idvalue) {
-//   return table.fields.find(f => f.id === idvalue);
-// }
-
+  // transpose data: one row per column
+  const tdata = table.fields.slice(1).map(f => {
+    return table.data.reduce((acc, d) => {
+      acc[d.id] = d[f.id];
+      return acc;
+    }, { id: f.label });
+  });
+  
+  return { ...table, transpose: true, tfields: tfields, tdata: tdata };
+}

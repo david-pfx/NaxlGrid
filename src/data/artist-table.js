@@ -3,6 +3,7 @@ import artist_data from './artist-data'
 
 export default {
 	id: "artist",
+	label: 'Artists',
 	title: "Music Artists",
   icon: "star.png",
 	fields: [

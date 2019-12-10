@@ -10,7 +10,7 @@ import ViewTranspose from './view-transpose';
 const imageUrl = '/image/'; // config
 
 ////////////////////////////////////////////////////////////////////////////////
-// View a block of some kind
+// Component to view a block of some kind
 //
 export default class ViewBlock extends Component {
   render() {
@@ -21,46 +21,40 @@ export default class ViewBlock extends Component {
     };
     const subtitleStyle = { fontStyle: 'bold', fontSize: '1.2rem' };
 
-    if (block.kind === 'note') {
-      return (
-        <Card style={cardStyle}>
-          <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
-          { block.notes.map((note,x) =>
-            <Card.Text key={x}>
-              {note}
-            </Card.Text>
-          )}
-        </Card> 
-      )
-    }
-    if (block.kind === 'table') {
-      return (
-        <Card style={cardStyle}>
-          <Card.Title style={subtitleStyle}>
-            <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
+    switch (block.kind) {
+      case 'note':
+        return (
+          <Card style={cardStyle}>
+            <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
+            {block.notes.map((note, x) =>
+              <Card.Text key={x}>
+                {note}
+              </Card.Text>
+            )}
+          </Card>
+        )
+      case 'table':
+        return (
+          <Card style={cardStyle}>
+            <Card.Title style={subtitleStyle}>
+              <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
             {block.title}
-          </Card.Title>
-          <ViewGrid table={block.table} dataset={block.table.dataset} />
-          {/* { block.tables.map((table,x) =>
-            <ViewGrid key={x} table={table} dataset={block.tables.dataset} />
-          )} */}
-        </Card> 
-      )
-    }
-    if (block.kind === 'tuple') {
-      return (
-        <Card style={cardStyle}>
-          <Card.Title style={subtitleStyle}>
-            <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
+            </Card.Title>
+            <ViewGrid table={block.table} dataset={block.table.dataset} />
+          </Card>
+        )
+      case 'tuple':
+        return (
+          <Card style={cardStyle}>
+            <Card.Title style={subtitleStyle}>
+              <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
             {block.title}
-          </Card.Title>
-          <ViewTranspose table={block.table} dataset={block.table.dataset} />
-          {/* { block.tables.map((table,x) =>
-            <ViewTranspose key={x} table={table} dataset={block.tables.dataset} />
-          )} */}
-        </Card> 
-      )
+            </Card.Title>
+            <ViewTranspose table={block.table} dataset={block.table.dataset} />
+          </Card>
+        )
+      default:
+        return <div>bad kind</div>;
     }
-    return <div>bad kind</div>;
   }
 }
