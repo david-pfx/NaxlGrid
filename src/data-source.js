@@ -1,4 +1,4 @@
-// Wrap data sources
+// Wrapper for data sources
 
 import comic_table from './data/comic-table';
 import settings_table from './data/settings-table';
@@ -6,7 +6,7 @@ import settings_table from './data/settings-table';
 import album_table from './data/album-table';
 import artist_table from './data/artist-table';
 import track_table from './data/track-table';
-//import { get } from 'http';
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // exports

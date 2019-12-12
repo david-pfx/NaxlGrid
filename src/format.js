@@ -49,7 +49,7 @@ const formatSimple = {
     </div>),
     html: d => d,
     json: d => JSON.stringify(d, null, '\t'),
-    image: d => <a href={imageUrl + d}><img src={imageUrl + d} width="60px" title={d} /></a>,
+    image: d => <a href={imageUrl + d}><img src={imageUrl + d} width="60px" title={d} alt={d} /></a>,
     url: d => <a href={d} target="_blank" rel="noopener noreferrer">{d} </a>,
     document: d => <a href={encodeURI(fileUrl+d)} target="_blank" rel="noopener noreferrer">{d} </a>, // TODO
     email: d => <a href={'mailto:' + d}>{d}</a>,
