@@ -7,90 +7,82 @@ import album_table from './data/album-table';
 import artist_table from './data/artist-table';
 import track_table from './data/track-table';
 
+import dataStore from './data-store';
 
 ////////////////////////////////////////////////////////////////////////////////
 // exports
 
 // get a list of sheets for this dataset
 export function getSheetList(ds) {
-  return (ds) ? [
+  if (!ds) return [ 
     getSheetHome(),
-    getSheetDataset(ds),
-    ...ds.tables.map(t => getSheet(ds, t)),
-    ...ds.sheets,
-  ] : [
+    //...dataStore.dataset_get().map(ds => getSheetDataset(ds)),
+    ...dataStore.dataset_get().map(ds => getSheetDataset(ds, dataStore.table_get(ds.id))),
+  ];
+
+  const tbs = dataStore.table_get(ds.id).sort(t => t.id);
+  const shs = dataStore.sheet_get(ds.id);
+  console.log('dsid', ds.id, 'ds', ds,'tbs', tbs, 'shs', shs);
+  return [
     getSheetHome(),
-    ...home_table.data.map(d => getSheetDataset(d)),
-  ]
+    getSheetDataset(ds, tbs),
+    ...tbs.map(t => getSheet(ds, t)),
+    ...shs,
+  ];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // the store is simply a list of data sets
-let store = [];
+//let store = [];
 
 export const setupStore = addAll();
-
-function addDataSet(ds) {
-  store.push(ds);
-  if (!ds.tables) ds.tables = [];
-  if (!ds.sheets) ds.sheets = [];
-  return ds;
-}
-
-function addTable(ds, table) {
-  ds.tables.push(table);
-  return table;
-}
-
-function addSheet(ds, sheet) {
-  ds.sheets.push(sheet);
-  return sheet;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-// home table
-const home_table = {
-  id: 'home',
-  label: 'Home',
-  title: 'Available datasets',
-  icon: 'table.gif',
-  fields: [
-    { id: 'id', type: 'text', label: 'Id', width: 10, },
-    { id: 'label', type: 'text', label: 'Label', },
-    { id: 'title', type: 'text', label: 'Title', },
-    { id: 'description', type: 'text', label: 'Description', },
-    { id: 'notes', type: 'array', label: 'Notes', },
-    { id: 'tables', type: 'array', label: 'Tables', },
-  ],
-  data: store,
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // set up all initial data
 function addAll() {
-  let cds = addDataSet({
+  const add_dss = (dss) => dss.forEach(ds => dataStore.dataset_add(ds));
+  const add_tbs = (id, tbs) => tbs.forEach(tb => dataStore.table_add({ ...tb, datasetid: id }));
+  const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_add({ ...sh, datasetid: id }));
+
+  add_dss([{
     id: 'novels', label: 'Novels', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  });
-  [transposeTable(settings_table), comic_table].forEach(table => {
-    addTable(cds, table);
-  });
-  connectTables(cds.tables);
-  addSheet(cds, getSheetPair(cds, settings_table));
+  }]);
+  add_tbs('novels', connectTables([transposeTable(settings_table), comic_table]));
+  add_shs('novels', [getSheetPair(dataStore.dataset_get('novels'), settings_table)]);
 
-  let mds = addDataSet({
+  add_dss([{
     id: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  });
-  [ album_table, artist_table, track_table ].forEach(table => {
-    addTable(mds, table);
-  });
-  connectTables(mds.tables);
+  }]);
+  add_tbs('music', connectTables([ album_table, artist_table, track_table ]));
 
+  console.log('datasets', dataStore.dataset_get());
+  console.log('tables', dataStore.table_get());
+  console.log('sheets', dataStore.sheet_get());
   return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// home table
+function getTableHome() {
+  return {
+    id: 'home',
+    label: 'Home',
+    title: 'Available datasets',
+    icon: 'table.gif',
+    fields: [
+      { id: 'id', type: 'text', label: 'Id', width: 10, },
+      { id: 'label', type: 'text', label: 'Label', },
+      { id: 'title', type: 'text', label: 'Title', },
+      { id: 'description', type: 'text', label: 'Description', },
+      { id: 'notes', type: 'array', label: 'Notes', },
+      { id: 'tables', type: 'array', label: 'Tables', },
+    ],
+    data: dataStore.dataset_get(),
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,25 +91,25 @@ function addAll() {
 // the default start sheet
 function getSheetHome() {
   return {
-    //dataset: home_table,
+    dataset: null,
     label: 'Home',
     title: 'Home',
     blocks: [
       { kind: 'note', title: 'No dataset loaded.', notes: [ 'Please select a dataset from the list.' ] },
-      { kind: 'table', title: 'Available data sets.', table: home_table },
+      { kind: 'table', title: 'Available data sets.', table: getTableHome() },
     ],
   }
 }
 
 // construct a sheet for the whole dataset
-function getSheetDataset(ds) {
+function getSheetDataset(ds, tables = []) {
   return {
     dataset: ds,
     label: ds.label,
     title: ds.title,
     blocks: [
       { kind: 'note', title: ds.description, notes: ds.notes },
-        ...ds.tables.map(t => ({ kind: t.transpose ? 'tuple' : 'table', title: t.title, table: t })) 
+        ...tables.map(t => ({ kind: t.transpose ? 'tuple' : 'table', title: t.title, table: t })) 
     ],
   }
 }
@@ -142,7 +134,6 @@ function getSheet(ds, table) {
     title: table.title,
     blocks: [
       { kind: table.transpose ? 'tuple' : 'table', title: table.title, table: table },
-      //{ kind: 'table', title: 'Regular table', table: table },
   ]}
 }
 

@@ -20,11 +20,13 @@ export default class App extends React.Component {
   }
 
   render() {
+    //console.log('sheets', Data.getSheetList(this.state.sheet.dataset));
     const sel = Data.getSheetList(this.state.sheet.dataset).map(s => ({
       label: s.label, 
       select: () => this.setState({ sheet: s })
     }));
     
+    console.log('sel', sel);
     return <ViewSheet 
       sheet={this.state.sheet} 
       selectors={sel} />;

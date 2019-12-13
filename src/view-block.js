@@ -40,7 +40,7 @@ export default function(props) {
             <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
           {block.title}
           </Card.Title>
-          <ViewGrid table={block.table} dataset={block.table.dataset} />
+          <ViewGrid table={block.table} />
         </Card>
       )
     case 'tuple':
@@ -50,7 +50,7 @@ export default function(props) {
             <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
           {block.title}
           </Card.Title>
-          <ViewTranspose table={block.table} dataset={block.table.dataset} />
+          <ViewTranspose table={block.table} />
         </Card>
       )
     default:
