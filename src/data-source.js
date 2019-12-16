@@ -12,23 +12,45 @@ import dataStore from './data-store';
 ////////////////////////////////////////////////////////////////////////////////
 // exports
 
-// get a list of sheets for this dataset
-export function getSheetList(ds) {
-  if (!ds) return [ 
-    getSheetHome(),
-    //...dataStore.dataset_get().map(ds => getSheetDataset(ds)),
-    ...dataStore.dataset_get().map(ds => getSheetDataset(ds, dataStore.table_get(ds.id))),
+// get a list of sheets for home, or for a dataset
+export function getSheetList(dsid) {
+  if (!dsid) return [ 
+    { kind: 'home', label: 'Home' },
+    ...dataStore.dataset_all().map(d => ({ kind: 'dataset', id: d.id, dsid: d.id, label: d.label })),
   ];
 
-  const tbs = dataStore.table_get(ds.id).sort(t => t.id);
-  const shs = dataStore.sheet_get(ds.id);
-  console.log('dsid', ds.id, 'ds', ds,'tbs', tbs, 'shs', shs);
+  const tbs = id => dataStore.table_all(id).sort(t => t.id);
+  const shs = id => dataStore.sheet_all(id);
+  const ds = dataStore.dataset_get(dsid);
   return [
-    getSheetHome(),
-    getSheetDataset(ds, tbs),
-    ...tbs.map(t => getSheet(ds, t)),
-    ...shs,
+    { kind: 'home', label: 'Home' },
+    { kind: 'dataset', id: dsid, dsid: dsid, label: ds.label },
+    ...tbs(ds.id).map(t => ({ kind: 'table', dsid: dsid, id: t.id, label: t.label })),
+    ...shs(ds.id).map(s => ({ kind: 'sheet', dsid: dsid, id: s.id, label: s.label })),
   ];
+}
+
+// get a list by selection from the list
+export function getSheet({kind, id, dsid}) {
+  //const {kind, id} = arg;
+  console.log('getSheet', kind, id, dsid);
+  const func = {
+    'home': a => getSheetHome(),
+    'dataset': a => getSheetDataset(dataStore.dataset_get(a)),
+    'table': (a,b) => getSheetTable(dataStore.dataset_get(b), dataStore.table_get(b, a)),
+    'sheet': (a,b) => dataStore.sheet_get(b, a), // BUG
+  }[kind];
+  return (func) ? func(id, dsid) : {};
+}
+
+export function doAction(action, payload) {
+  if (action === 'NEW') {
+    if (!payload.dsid) {
+      dataStore.dataset_add(payload);
+    } else {
+      dataStore.table_add(payload);
+    }
+  } else alert(`action: ${action}, payload: ${JSON.stringify(payload)}`);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +73,7 @@ function addAll() {
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
   }]);
   add_tbs('novels', connectTables([transposeTable(settings_table), comic_table]));
-  add_shs('novels', [getSheetPair(dataStore.dataset_get('novels'), settings_table)]);
+  add_shs('novels', [getSheetPair(dataStore.dataset_get('novels'), transposeTable(settings_table))]);
 
   add_dss([{
     id: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 
@@ -59,15 +81,15 @@ function addAll() {
   }]);
   add_tbs('music', connectTables([ album_table, artist_table, track_table ]));
 
-  console.log('datasets', dataStore.dataset_get());
-  console.log('tables', dataStore.table_get());
-  console.log('sheets', dataStore.sheet_get());
+  //console.log('datasets', dataStore.dataset_get());
+  //console.log('tables', dataStore.table_get());
+  //console.log('sheets', dataStore.sheet_get());
   return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// home table
-function getTableHome() {
+// datasets table
+function getTableDatasets() {
   return {
     id: 'home',
     label: 'Home',
@@ -81,7 +103,26 @@ function getTableHome() {
       { id: 'notes', type: 'array', label: 'Notes', },
       { id: 'tables', type: 'array', label: 'Tables', },
     ],
-    data: dataStore.dataset_get(),
+    data: dataStore.dataset_all(), // TODO: get tables
+  }
+}
+
+// table of tables
+function getTableTables(ds) {
+  return {
+    id: 'table',
+    label: 'Tables',
+    title: `Available tables in dataset ${ds.label}`,
+    icon: 'table.gif',
+    fields: [
+      { id: 'id', type: 'text', label: 'Id', width: 10, },
+      { id: 'label', type: 'text', label: 'Label', },
+      { id: 'title', type: 'text', label: 'Title', },
+      { id: 'icon', type: 'image', label: 'Icon', },
+      { id: 'fields', type: 'array', label: 'Fields', },
+      { id: 'data', type: 'array', label: 'Rows', },
+    ],
+    data: dataStore.table_all(ds.id),
   }
 }
 
@@ -90,50 +131,52 @@ function getTableHome() {
 
 // the default start sheet
 function getSheetHome() {
+  const table = getTableDatasets();
   return {
-    dataset: null,
+    dsid: null,
     label: 'Home',
     title: 'Home',
     blocks: [
       { kind: 'note', title: 'No dataset loaded.', notes: [ 'Please select a dataset from the list.' ] },
-      { kind: 'table', title: 'Available data sets.', table: getTableHome() },
+      { kind: 'table', title: table.title, table: table, },
     ],
   }
 }
 
 // construct a sheet for the whole dataset
-function getSheetDataset(ds, tables = []) {
+function getSheetDataset(ds) {
+  const table = getTableTables(ds);
   return {
-    dataset: ds,
+    dsid: ds.id,
     label: ds.label,
     title: ds.title,
     blocks: [
       { kind: 'note', title: ds.description, notes: ds.notes },
-        ...tables.map(t => ({ kind: t.transpose ? 'tuple' : 'table', title: t.title, table: t })) 
+      { kind: 'table', title: table.title, table: table, },
     ],
   }
+}
+
+// construct a sheet for a single table
+function getSheetTable(ds, table) {
+  return {
+    dsid: ds.id,
+    label: table.label,
+    title: table.title,
+    blocks: [
+      { kind: table.transpose ? 'tuple' : 'table', title: table.title, table: table },
+  ]}
 }
 
 // construct a sheet pair for a single table
 function getSheetPair(ds, table) {
   return {
-    dataset: ds,
+    dsid: ds.id,
     label: table.label + ' x2',
     title: table.title,
     blocks: [
       { kind: 'table', title: 'Regular table', table: table },
-      { kind: 'tuple', title: 'Transposed table', table: transposeTable(table) },
-  ]}
-}
-
-// construct a sheet for a single table
-function getSheet(ds, table) {
-  return {
-    dataset: ds,
-    label: table.label,
-    title: table.title,
-    blocks: [
-      { kind: table.transpose ? 'tuple' : 'table', title: table.title, table: table },
+      { kind: 'tuple', title: 'Transposed table', table: table },
   ]}
 }
 

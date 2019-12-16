@@ -10,7 +10,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sheet: Data.getSheetList()[0],
+      sheet: Data.getSheet({ kind: 'home' }),
     }
   }
 
@@ -19,16 +19,31 @@ export default class App extends React.Component {
     //Data.testData();
   }
 
+  doSelect(sel) {
+    //console.log('sel', sel);
+    this.setState({ 
+      dsid: sel.dsid,
+      sheet: Data.getSheet(sel),
+    });
+  }
+
+  doAction(action, payload) {
+    Data.doAction(action, payload);
+    this.forceUpdate();
+  }  
+  
   render() {
-    //console.log('sheets', Data.getSheetList(this.state.sheet.dataset));
-    const sel = Data.getSheetList(this.state.sheet.dataset).map(s => ({
+    //console.log('props', this.props);
+    const sel = Data.getSheetList(this.state.dsid).map(s => ({
       label: s.label, 
-      select: () => this.setState({ sheet: s })
+      select: () => this.doSelect(s),
+      //select: () => this.setState({ sheet: Data.getSheet(s) }),
     }));
     
-    console.log('sel', sel);
+    //console.log('sellist', sel);
     return <ViewSheet 
       sheet={this.state.sheet} 
+      action={(action, payload) => this.doAction(action, { ...payload, dsid: this.state.dsid })}
       selectors={sel} />;
   }
 }

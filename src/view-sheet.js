@@ -4,9 +4,9 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col'
-import Image from 'react-bootstrap/Image'
-import Button from 'react-bootstrap/Button'
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import Button from 'react-bootstrap/Button';
 
 import ViewBlock from './view-block';
 
@@ -14,6 +14,7 @@ import ViewBlock from './view-block';
 // Component to view a sheet as a list of blocks
 //
 export default function(props) {
+  //console.log('view sheet', props);
   const sheet = props.sheet;
   const titleBgColor = 'yellow';
   const sidebarBgColor = 'palegreen';
@@ -37,7 +38,7 @@ export default function(props) {
           <Row style={{ backgroundColor: titleBgColor }}>
             <Col style={titleStyle}>{sheet.title}</Col>
           </Row>
-          { sheet.blocks.map((b,x) => <ViewBlock key={x} block={b} />) }
+          { sheet.blocks.map((b,x) => <ViewBlock key={x} block={b} action={props.action} />) }
         </Col>
       </Row>
     </Container>

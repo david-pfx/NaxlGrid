@@ -4,7 +4,10 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card'
 //import Card, { CardBody } from 'react-bootstrap/Card'
-import Image from 'react-bootstrap/Image'
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import Button from 'react-bootstrap/Button';
 
 import ViewGrid from './view-grid';
 import ViewTranspose from './view-transpose';
@@ -14,6 +17,7 @@ const imageUrl = '/image/'; // config
 // Component to view a block of some kind
 //
 export default function(props) {
+  //console.log('view block', props);
   const block = props.block;
   const cardStyle = { 
     backgroundColor: 'cyan',
@@ -37,8 +41,17 @@ export default function(props) {
       return (
         <Card style={cardStyle}>
           <Card.Title style={subtitleStyle}>
-            <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
-          {block.title}
+          <Row>
+            <Col>
+              <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
+              {block.title}
+            </Col>
+            <Col>
+              <Button 
+                style={{ margin: '0.3rem', float: 'right'}} 
+                onClick={e => props.action('NEW', { table: block.table })} >New</Button>
+            </Col>
+            </Row>
           </Card.Title>
           <ViewGrid table={block.table} />
         </Card>
@@ -48,7 +61,7 @@ export default function(props) {
         <Card style={cardStyle}>
           <Card.Title style={subtitleStyle}>
             <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
-          {block.title}
+            {block.title}
           </Card.Title>
           <ViewTranspose table={block.table} />
         </Card>
