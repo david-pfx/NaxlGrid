@@ -21,29 +21,29 @@ const genre_list = [
 
 export default {
     // heading information
-    id: 'comic',
+    tableid: 'comic',
     label: 'Comics',
     title: 'Comic novels',
     icon: 'comics.png',
 
     // column information
     fields: [
-		{ id: "id", type: "integer", label: "Id", },
-        { id: 'title', type: 'text', label: 'Title', required: true },
-        { id: 'authors', type: 'text', label: 'Authors' },
-        { id: 'genre', type: 'lov', label: 'Genre', list: genre_list },
-        { id: 'serie_nb', type: 'integer', label: 'Albums' },
-        { id: 'have_nb', type: 'integer', label: 'Owned' },
-        { id: 'have', type: 'text', label: 'Have' },
-        { id: 'language', type: 'lov', label: 'Language', list: [
+		{ fieldid: "id", type: "integer", label: "Id", },
+        { fieldid: 'title', type: 'text', label: 'Title', required: true },
+        { fieldid: 'authors', type: 'text', label: 'Authors' },
+        { fieldid: 'genre', type: 'lov', label: 'Genre', list: genre_list },
+        { fieldid: 'serie_nb', type: 'integer', label: 'Albums' },
+        { fieldid: 'have_nb', type: 'integer', label: 'Owned' },
+        { fieldid: 'have', type: 'text', label: 'Have' },
+        { fieldid: 'language', type: 'lov', label: 'Language', list: [
             { id: 2, text: 'French', icon: 'flags/fr.png' },
             { id: 1, text: 'English', icon: 'flags/us.png' } ] },
-        { id: 'complete', type: 'boolean', label: 'Complete' },
-        { id: 'finished', type: 'boolean', label: 'Finished' },
-        { id: 'url_bdfugue', type: 'url', label: 'BDFugue' },
-        { id: 'url_amazon', type: 'url', width: 38, label: 'Amazon' },
-        { id: 'notes', type: 'textmultiline', label: 'Notes' },
-        { id: 'pix', type: 'image', label: 'Cover' },
+        { fieldid: 'complete', type: 'boolean', label: 'Complete' },
+        { fieldid: 'finished', type: 'boolean', label: 'Finished' },
+        { fieldid: 'url_bdfugue', type: 'url', label: 'BDFugue' },
+        { fieldid: 'url_amazon', type: 'url', width: 38, label: 'Amazon' },
+        { fieldid: 'notes', type: 'textmultiline', label: 'Notes' },
+        { fieldid: 'pix', type: 'image', label: 'Cover' },
     ],
 
     data: comic_data.map((row, x) => ({ ...row, id: x+1 })),

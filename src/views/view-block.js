@@ -29,7 +29,20 @@ export default function(props) {
     case 'note':
       return (
         <Card style={cardStyle}>
-          <Card.Title style={subtitleStyle}>{block.title}</Card.Title>
+          <Card.Title style={subtitleStyle}>
+          <Row>
+            <Col>
+              <Image src={imageUrl + 'document-32.png'} width='20px' />&nbsp;
+              {block.title}
+            </Col>
+            <Col>
+              <Button 
+                size="sm"
+                style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                onClick={e => props.action('NEW', { noteid: block.table.tableid })} >+</Button>
+            </Col>
+            </Row>
+          </Card.Title>
           {block.notes.map((note, x) =>
             <Card.Text key={x}>
               {note}
@@ -50,7 +63,7 @@ export default function(props) {
               <Button 
                 size="sm"
                 style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
-                onClick={e => props.action('NEW', { tableid: block.table.id })} >+</Button>
+                onClick={e => props.action('NEW', { tableid: block.table.tableid })} >+</Button>
             </Col>
             </Row>
           </Card.Title>

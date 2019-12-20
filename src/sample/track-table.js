@@ -14,17 +14,16 @@ const genre_list = [
 ];
 
 export default {
-	id: "track",
+	tableid: "track",
 	label: 'Tracks',
 	title: "Music tracks",
   icon: "music.png",
 	fields: [
-		{ id: "id", type: "integer", label: "Id", },
-		{ id: "name", type: "text", label: "Name", required: true, },
-		{ id: "album", type: "lookup", label: "Album", target: "album.title" },
-		{ id: "length", type: "text", label: "Length", width: 10 },
-		{ id: "genre", type: "lov", label: "Genre", list: genre_list,
-		}
+		{ fieldid: "id", type: "integer", label: "Id", },
+		{ fieldid: "name", type: "text", label: "Name", required: true, },
+		{ fieldid: "album", type: "lookup", label: "Album", target: "album.title" },
+		{ fieldid: "length", type: "text", label: "Length", width: 10 },
+		{ fieldid: "genre", type: "lov", label: "Genre", list: genre_list },
 	],
 	data: track_data.map((row, x) => ({ ...row, id: x+1 })),
 }

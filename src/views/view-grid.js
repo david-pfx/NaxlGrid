@@ -13,7 +13,7 @@ export default function(props) {
 
   const columns = props.table.fields.map((f, x) => ({
     text: f.label,
-    dataField: f.id,
+    dataField: f.fieldid,
     sort: true,
     headerStyle: {
       backgroundColor: 'tomato',

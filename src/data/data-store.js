@@ -43,7 +43,7 @@ function dataset_all() {
 }
 
 function dataset_get(dsid) {
-  return topStack().datasets.find(d => d.id === dsid);
+  return topStack().datasets.find(d => d.datasetid === dsid);
 }
 
 function table_all(dsid) {
@@ -51,7 +51,7 @@ function table_all(dsid) {
 }
 
 function table_get(dsid, tbid) {
-  return topStack().tables.find(t => t.datasetid === dsid && t.id === tbid);
+  return topStack().tables.find(t => t.datasetid === dsid && t.tableid === tbid);
 }
 
 function sheet_all(dsid) {
@@ -65,24 +65,24 @@ function sheet_get(dsid, shid) {
 // add dataset
 function dataset_add(ds) {
   const newds = { 
-    id: topStack().datasets.length + 1,
     notes: [], 
     ...ds,
+    id: topStack().datasets.length + 1,
   };
   // validate here
   pushNext({ 
     ...topStack(), 
-    datasets: [ ...topStack().datasets.filter(d => d.id !== ds.id), newds ], 
+    datasets: [ ...topStack().datasets.filter(d => d.datasetid !== ds.datasetid), newds ], 
   });
 }
 
 // add sheet to dataset
 function sheet_add(dsid, sh) {
   const newsh = {
-    id: topStack().sheets.length + 1,
     data: [], 
     ...sh,
     datasetid: dsid,
+    id: topStack().sheets.length + 1,
   }
   pushNext({ 
     ...topStack(), 
@@ -93,10 +93,10 @@ function sheet_add(dsid, sh) {
 // add table to dataset
 function table_add(dsid, tb) {
   const newtb = {
-    id: topStack().tables.length + 1,
     data: [], 
     ...tb,
     datasetid: dsid,
+    id: topStack().tables.length + 1,
   }
   pushNext({ 
     ...topStack(), 
@@ -108,14 +108,14 @@ function table_add(dsid, tb) {
 function row_add(dsid, tbid, row) {
   const table = table_get(dsid, tbid);
   const newrow = {
-    id: table.data.length + 1,
     ...row,
+    id: table.data.length + 1,
   }
   const newtable = { 
     ...table,
     data: [ ...table.data.filter(r => r.id !== newrow.id), newrow ],
   }
-  //console.log(newtable);
+  console.log(newtable);
   table_add(dsid, newtable);
 }
 

@@ -15,7 +15,7 @@ export default function(props) {
   const columns = table.tfields.map((f, colx) => (
     (colx === 0) ? {
       text: f.label,
-      dataField: f.id,
+      dataField: f.fieldid,
       headerStyle: {
         backgroundColor: 'tomato',
         textAlign: 'center',
@@ -27,7 +27,7 @@ export default function(props) {
       },
     } : {
       text: f.label,
-      dataField: f.id,
+      dataField: f.fieldid,
       headerStyle: {
         backgroundColor: 'tomato',
         textAlign: 'center',

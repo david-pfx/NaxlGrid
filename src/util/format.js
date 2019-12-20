@@ -73,7 +73,7 @@ function formatAll(data, type, list) {
         const row = list.data.find(v => v.id === data);
         return row 
             ? <span style={{ color: 'green' }}>
-                {formatAll(row[list.field.id], list.field.type)}
+                {formatAll(row[list.field.fieldid], list.field.type)}
               </span> 
             : '[' + data + ']';
     }

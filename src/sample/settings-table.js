@@ -2,23 +2,23 @@
 
 export default {
   // heading information
-  id: 'settings',
+  tableid: 'settings',
   label: 'Settings',
   title: 'Current settings',
   comment: 'This is a single row table of settings',
 
   // column information
   fields: [
-		{ id: "id", type: "integer", label: "Id", },
-    { id: 'owner', type: 'text', label: 'Owner' },
-    { id: 'light', type: 'lov',  label: 'Light',  list: [
+		{ fieldid: "id", type: "integer", label: "Id", },
+    { fieldid: 'owner', type: 'text', label: 'Owner' },
+    { fieldid: 'light', type: 'lov',  label: 'Light',  list: [
             { id: 1, text: 're  ' },
             { id: 2, text: 'amber' },
             { id: 3, text: 'green' },
         ]},
-    { id: 'factor',     type: 'decimal',  label: 'Ratio factor' },
-    { id: 'startdate',  type: 'date',     label: 'Start date' },
-    { id: 'deadline',   type: 'datetime', label: 'Deadline' },
+    { fieldid: 'factor',     type: 'decimal',  label: 'Ratio factor' },
+    { fieldid: 'startdate',  type: 'date',     label: 'Start date' },
+    { fieldid: 'deadline',   type: 'datetime', label: 'Deadline' },
   ],
   data: [{
     id: 1,
