@@ -9,41 +9,44 @@ import * as Data from './data-source';
 export default class App extends React.Component {
   constructor(props) {
     super(props);
+    const sel = { kind: 'home' };
     this.state = {
-      sheet: Data.getSheet({ kind: 'home' }),
+      sel: sel,
+      sheet: Data.getSheet(sel),
     }
   }
 
   componentDidMount() {
-    //this.setState({ sheet: Data.getSheetList()[1] });
-    //Data.testData();
+    //this.doSelect(Data.getSheetList()[1]);
   }
 
   doSelect(sel) {
     //console.log('sel', sel);
     this.setState({ 
       dsid: sel.dsid,
+      sel: sel,
       sheet: Data.getSheet(sel),
     });
   }
 
-  doAction(action, payload) {
-    Data.doAction(action, payload);
-    this.forceUpdate();
+  doAction(action, args) {
+    Data.doAction(action, { ...args, dsid: this.state.dsid });
+    this.setState({
+      sheet: Data.getSheet(this.state.sel),
+    })
   }  
   
   render() {
     //console.log('props', this.props);
-    const sel = Data.getSheetList(this.state.dsid).map(s => ({
+    const selpairs = Data.getSheetList(this.state.dsid).map(s => ({
       label: s.label, 
       select: () => this.doSelect(s),
-      //select: () => this.setState({ sheet: Data.getSheet(s) }),
     }));
     
     //console.log('sellist', sel);
     return <ViewSheet 
       sheet={this.state.sheet} 
-      action={(action, payload) => this.doAction(action, { ...payload, dsid: this.state.dsid })}
-      selectors={sel} />;
+      action={(action, args) => this.doAction(action, args)}
+      selectors={selpairs} />;
   }
 }

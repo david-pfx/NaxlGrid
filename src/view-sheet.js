@@ -14,7 +14,6 @@ import ViewBlock from './view-block';
 // Component to view a sheet as a list of blocks
 //
 export default function(props) {
-  //console.log('view sheet', props);
   const sheet = props.sheet;
   const titleBgColor = 'yellow';
   const sidebarBgColor = 'palegreen';
@@ -36,7 +35,14 @@ export default function(props) {
         </Col>
         <Col> 
           <Row style={{ backgroundColor: titleBgColor }}>
-            <Col style={titleStyle}>{sheet.title}</Col>
+            <Col lg="11"
+              style={titleStyle}>{sheet.title}</Col>
+            <Col>
+              <Button size="sm"
+                style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                onClick={e => props.action('NEW', { sheet: sheet })} >+
+              </Button>
+            </Col>
           </Row>
           { sheet.blocks.map((b,x) => <ViewBlock key={x} block={b} action={props.action} />) }
         </Col>

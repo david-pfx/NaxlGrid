@@ -21,7 +21,7 @@ const genre_list = [
 
 export default {
     // heading information
-    id: 'comics',
+    id: 'comic',
     label: 'Comics',
     title: 'Comic novels',
     icon: 'comics.png',

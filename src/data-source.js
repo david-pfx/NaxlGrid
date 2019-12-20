@@ -1,5 +1,8 @@
 // Wrapper for data sources
 
+//import * as assert from 'assert-plus';
+//import { strict as assert } from 'assert';
+//import assert from 'assert';
 import comic_table from './data/comic-table';
 import settings_table from './data/settings-table';
 
@@ -9,11 +12,16 @@ import track_table from './data/track-table';
 
 import dataStore from './data-store';
 
+//require('./assert');
+
+export const setupStore = addAll();
+
 ////////////////////////////////////////////////////////////////////////////////
 // exports
 
 // get a list of sheets for home, or for a dataset
 export function getSheetList(dsid) {
+  //assert.ok(dsid);
   if (!dsid) return [ 
     { kind: 'home', label: 'Home' },
     ...dataStore.dataset_all().map(d => ({ kind: 'dataset', id: d.id, dsid: d.id, label: d.label })),
@@ -31,59 +39,89 @@ export function getSheetList(dsid) {
 }
 
 // get a list by selection from the list
-export function getSheet({kind, id, dsid}) {
-  //const {kind, id} = arg;
-  console.log('getSheet', kind, id, dsid);
+export function getSheet({ kind, id, dsid }) {
+  //console.log('getSheet', kind, id, dsid);
   const func = {
-    'home': a => getSheetHome(),
-    'dataset': a => getSheetDataset(dataStore.dataset_get(a)),
-    'table': (a,b) => getSheetTable(dataStore.dataset_get(b), dataStore.table_get(b, a)),
-    'sheet': (a,b) => dataStore.sheet_get(b, a), // BUG
+    'home': () => getSheetHome(),
+    'dataset': () => getSheetDataset(dataStore.dataset_get(dsid)),
+    'table': () => getSheetTable(dataStore.dataset_get(dsid), getConnectedTable(dsid, id)),
+    'sheet': () => dataStore.sheet_get(dsid, id), // BUG: table may be stale
   }[kind];
-  return (func) ? func(id, dsid) : {};
+  return (func) ? func() : {};
 }
 
+// available actions
 export function doAction(action, payload) {
+  console.log('do action', action, payload);
   if (action === 'NEW') {
-    if (!payload.dsid) {
-      dataStore.dataset_add(payload);
-    } else {
-      dataStore.table_add(payload);
-    }
-  } else alert(`action: ${action}, payload: ${JSON.stringify(payload)}`);
+    if (payload.tableid)
+      return doNewTable(payload);
+    if (payload.sheet)
+      return doNewSheet(payload);
+    alert(`action: ${action}, payload: ${JSON.stringify(payload)}`);
+  }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+function doNewTable({ dsid, tableid }) {
+  if (tableid === 'home') {
+    dataStore.dataset_add({
+      label: '<new-dataset>', 
+      title: 'New Dataset', 
+      description: '', 
+      notes: [],
+    });
+  } else if (tableid === 'table') {
+    //assert.ok(dsid);
+    dataStore.table_add(dsid, {
+      label: '<new-table>',
+      title: 'New Table',
+      icon: 'table.gif',
+      fields: [
+        { id: "id", type: "integer", label: "Id", },
+        { id: "field1", type: "text", label: "Field 1", },
+        { id: "field2", type: "text", label: "Field 2", },
+      ],
+      data: [],
+    });
+  } else {
+    //assert.ok(dsid);
+    //assert.ok(tableid);
+    const table = dataStore.table_get(dsid, tableid);
+    const newrow = table.fields.reduce((acc, f) => ({ ...acc, [f.id]: '' }), {});
+    console.log('table', table, 'newrow', newrow);
+    dataStore.table_add(dsid, tableid, newrow);
+  } 
+}
 
-// the store is simply a list of data sets
-//let store = [];
-
-export const setupStore = addAll();
+function doNewSheet({ dsid }) {
+  dataStore.sheet_add(dsid, {
+    label: '<new-sheet>',
+    title: 'New Sheet',
+    blocks: [],
+  });
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // set up all initial data
 function addAll() {
   const add_dss = (dss) => dss.forEach(ds => dataStore.dataset_add(ds));
-  const add_tbs = (id, tbs) => tbs.forEach(tb => dataStore.table_add({ ...tb, datasetid: id }));
-  const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_add({ ...sh, datasetid: id }));
+  const add_tbs = (id, tbs) => tbs.forEach(tb => dataStore.table_add(id, tb));
+  const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_add(id, sh));
 
   add_dss([{
     id: 'novels', label: 'Novels', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
   }]);
-  add_tbs('novels', connectTables([transposeTable(settings_table), comic_table]));
+  add_tbs('novels', [transposeTable(settings_table), comic_table]);
   add_shs('novels', [getSheetPair(dataStore.dataset_get('novels'), transposeTable(settings_table))]);
 
   add_dss([{
     id: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
   }]);
-  add_tbs('music', connectTables([ album_table, artist_table, track_table ]));
+  add_tbs('music', [ album_table, artist_table, track_table ]);
 
-  //console.log('datasets', dataStore.dataset_get());
-  //console.log('tables', dataStore.table_get());
-  //console.log('sheets', dataStore.sheet_get());
   return true;
 }
 
@@ -183,25 +221,24 @@ function getSheetPair(ds, table) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // set up connections between tables for lookups
-function connectTables(tables) {
-  tables.forEach(t => {
-    t.fields.forEach(f => {
-      if (f.type === 'lookup') {
-        const [t1,t2] = f.target.split('.');
-        const table = tables.find(t => t.id === t1);
-        const field = table && table.fields.find(f => f.id === t2);
-        // if ok construct a pair of table data and relevant field
-        if (table && field) {
-          f.list = {
-            data: table.data,
-            field: field,
-          }
-          console.log('fixtables', f);
+function getConnectedTable(dsid, tableid) {
+  const table = dataStore.table_get(dsid, tableid);
+  table.fields.forEach(f => {
+    if (f.type === 'lookup') {
+      const [t1,t2] = f.target.split('.');
+      const table = dataStore.table_get(dsid, t1);
+      const field = table && table.fields.find(f => f.id === t2);
+      // if ok construct a pair of table data and relevant field
+      if (table && field) {
+        f.list = {
+          data: table.data,
+          field: field,
         }
+        //console.log('fixtables', f);
       }
-    });
+    }
   });
-  return tables;
+  return table;
 }
 
 // add transpose fields to the table

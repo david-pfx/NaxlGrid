@@ -1,7 +1,7 @@
 // data store holding all data state
 // time-travelling immutable
 
-export default { dataset_add, dataset_all, table_add, sheet_add, dataset_get, table_all, table_get, sheet_all, sheet_get };
+export default { undo, redo, dataset_all, dataset_get, dataset_add, sheet_all, sheet_get, sheet_add, table_all, table_get, table_add, row_add };
 
 const initialState = {
   datasets: [],
@@ -9,47 +9,35 @@ const initialState = {
   sheets: [],
 }
 
-const stateStack = [];
+const stateStack = [initialState];
+var stateCurrent = 0;
 
-const topStack = () => (stateStack.length === 0) ? initialState : stateStack[stateStack.length-1];
-
-function dataset_add(ds) {
-  const newds = { 
-    id: topStack().datasets.length,
-    notes: [], 
-    ...ds,
-  };
-  // validate here
-  stateStack.push({ 
-    ...topStack(), 
-    datasets: [ ...topStack().datasets.filter(d => d.id !== ds.id), newds ], 
-  });
+function topStack() {
+  return stateStack[stateCurrent];
 }
 
-function table_add(tb) {
-  const newtb = {
-    id: topStack().tables.length,
-    data: [], 
-    ...tb,
-  }
-  stateStack.push({ 
-    ...topStack(), 
-    tables: [ ...topStack().tables.filter(t => t.id !== tb.id), newtb ],
-  });
+// add a new state, discarding any other future
+function pushNext(state) {
+  stateStack.length = stateCurrent + 1;
+  stateStack.push(state);
+  stateCurrent++;
 }
 
-function sheet_add(sh) {
-  const newsh = {
-    id: topStack().sheets.length,
-    data: [], 
-    ...sh,
-  }
-  stateStack.push({ 
-    ...topStack(), 
-    sheets: [ ...topStack().sheets.filter(s => s.id !== sh.id), newsh ] ,
-  });
+// travel back to a previous state (return false if none)
+function undo() {
+  if (stateCurrent === 0) return false;
+  stateCurrent--;
+  return true;
 }
 
+// travel forward to a future state (return false if none)
+function redo() {
+  if (stateCurrent === stateStack.length - 1) return false;
+  stateCurrent++;
+  return true;
+}
+
+// query functions
 function dataset_all() {
   return topStack().datasets;
 }
@@ -73,3 +61,61 @@ function sheet_all(dsid) {
 function sheet_get(dsid, shid) {
   return topStack().sheets.find(t => t.datasetid === dsid && t.id === shid);
 }
+
+// add dataset
+function dataset_add(ds) {
+  const newds = { 
+    id: topStack().datasets.length + 1,
+    notes: [], 
+    ...ds,
+  };
+  // validate here
+  pushNext({ 
+    ...topStack(), 
+    datasets: [ ...topStack().datasets.filter(d => d.id !== ds.id), newds ], 
+  });
+}
+
+// add sheet to dataset
+function sheet_add(dsid, sh) {
+  const newsh = {
+    id: topStack().sheets.length + 1,
+    data: [], 
+    ...sh,
+    datasetid: dsid,
+  }
+  pushNext({ 
+    ...topStack(), 
+    sheets: [ ...topStack().sheets.filter(s => s.id !== sh.id), newsh ] ,
+  });
+}
+
+// add table to dataset
+function table_add(dsid, tb) {
+  const newtb = {
+    id: topStack().tables.length + 1,
+    data: [], 
+    ...tb,
+    datasetid: dsid,
+  }
+  pushNext({ 
+    ...topStack(), 
+    tables: [ ...topStack().tables.filter(t => t.id !== tb.id), newtb ],
+  });
+}
+
+// add row to table in dataset
+function row_add(dsid, tbid, row) {
+  const table = table_get(dsid, tbid);
+  const newrow = {
+    id: table.data.length + 1,
+    ...row,
+  }
+  const newtable = { 
+    ...table,
+    data: [ ...table.data.filter(r => r.id !== newrow.id), newrow ],
+  }
+  //console.log(newtable);
+  table_add(dsid, newtable);
+}
+

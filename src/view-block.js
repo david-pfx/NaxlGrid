@@ -48,8 +48,9 @@ export default function(props) {
             </Col>
             <Col>
               <Button 
-                style={{ margin: '0.3rem', float: 'right'}} 
-                onClick={e => props.action('NEW', { table: block.table })} >New</Button>
+                size="sm"
+                style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                onClick={e => props.action('NEW', { tableid: block.table.id })} >+</Button>
             </Col>
             </Row>
           </Card.Title>
