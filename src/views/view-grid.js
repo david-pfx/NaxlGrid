@@ -3,7 +3,7 @@
 import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 
-import Format from './format';
+import Format from '../util/format';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Component to view a table in grid format

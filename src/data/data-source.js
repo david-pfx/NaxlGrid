@@ -3,12 +3,12 @@
 //import * as assert from 'assert-plus';
 //import { strict as assert } from 'assert';
 //import assert from 'assert';
-import comic_table from './data/comic-table';
-import settings_table from './data/settings-table';
+import comic_table from '../sample/comic-table';
+import settings_table from '../sample/settings-table';
 
-import album_table from './data/album-table';
-import artist_table from './data/artist-table';
-import track_table from './data/track-table';
+import album_table from '../sample/album-table';
+import artist_table from '../sample/artist-table';
+import track_table from '../sample/track-table';
 
 import dataStore from './data-store';
 

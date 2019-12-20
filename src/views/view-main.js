@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ViewSheet from './view-sheet';
-import * as Data from './data-source';
+import * as Data from '../data/data-source';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Root component to construct the view and maintain state
