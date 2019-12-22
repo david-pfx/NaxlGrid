@@ -9,7 +9,6 @@ import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 
-import ViewGrid from './view-grid';
 import ViewTable from './view-table';
 import ViewTranspose from './view-transpose';
 const imageUrl = '/image/'; // config
@@ -25,6 +24,7 @@ export default function(props) {
     marginTop: '0.5rem', 
   };
   const subtitleStyle = { fontStyle: 'bold', fontSize: '1.2rem' };
+  const buttonStyle = { marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'};
 
   switch (block.kind) {
     case 'note':
@@ -39,7 +39,7 @@ export default function(props) {
             <Col>
               <Button 
                 size="sm"
-                style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                style={buttonStyle} 
                 onClick={e => props.action('NEW', { noteid: block.table.tableid })} >+</Button>
             </Col>
             </Row>
@@ -49,26 +49,6 @@ export default function(props) {
               {note}
             </Card.Text>
           )}
-        </Card>
-      )
-    case 'grid':
-      return (
-        <Card style={cardStyle}>
-          <Card.Title style={subtitleStyle}>
-          <Row>
-            <Col>
-              <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
-              {block.title}
-            </Col>
-            <Col>
-              <Button 
-                size="sm"
-                style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
-                onClick={e => props.action('NEW', { tableid: block.table.tableid })} >+</Button>
-            </Col>
-            </Row>
-          </Card.Title>
-          <ViewGrid table={block.table} />
         </Card>
       )
       case 'table':
@@ -84,24 +64,14 @@ export default function(props) {
               <Col>
                 <Button 
                   size="sm"
-                  style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                  style={buttonStyle} 
                   onClick={e => props.action('NEW', { tableid: block.table.tableid })} >+</Button>
               </Col>
               </Row>
             </Card.Title>
-            <ViewTable table={block.table} istrans={block.kind == 'trans'} />
+            <ViewTable table={block.table} istrans={block.kind === 'trans'} />
           </Card>
         )
-      // case 'trans':
-      // return (
-      //   <Card style={cardStyle}>
-      //     <Card.Title style={subtitleStyle}>
-      //       <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
-      //       {block.title}
-      //     </Card.Title>
-      //     <ViewTranspose table={block.table} />
-      //   </Card>
-      //)
     default:
       return <div>bad kind</div>;
   }

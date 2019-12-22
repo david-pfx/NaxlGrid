@@ -17,31 +17,40 @@ export default function(props) {
   const sheet = props.sheet;
   const titleBgColor = 'yellow';
   const sidebarBgColor = 'palegreen';
-  const titleStyle = { fontWeight: 'bold', fontSize: '1.5rem', textAlign: 'center' };
+  const titleStyle = { 
+    backgroundColor: titleBgColor,
+    fontWeight: 'bold', fontSize: '1.5rem', textAlign: 'center' 
+  };
+  const sidebarStyle = { 
+    backgroundColor: sidebarBgColor 
+  };
+  const buttonStyle = { 
+    marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'
+  };
 
   document.title = `Naxl - ${sheet.title}`;
 
   return (
     <Container fluid style={{ lineHeight: 1.2, backgroundColor: titleBgColor }}>
       <Row>
-        <Col lg={1} 
-              style={{ backgroundColor: sidebarBgColor }}>
+        <Col lg={1} key={1}
+          style={sidebarStyle}>
             <Row>
               <Image src="n-logo.png" height="40" style={{ marginLeft: 'auto', marginRight: 'auto' }}/>
             </Row>
             { // A button for each sheet in the left sidebar
-              props.selectors.map(s => <Row key={s.label}>
-                <Button block style={{ margin: '0.3rem'}} onClick={e => s.select() }>{ s.label }</Button>
-              </Row>) 
+              props.selectors.map((s,x) => 
+                <Row key={x}>
+                  <Button block style={{ margin: '0.3rem'}} onClick={e => s.select() }>{ s.label }</Button>
+                </Row>) 
             }
         </Col>
         <Col> 
-          <Row style={{ backgroundColor: titleBgColor }}>
-            <Col lg="11"
-              style={titleStyle}>{sheet.title}</Col>
+          <Row style={titleStyle}>
+            <Col lg="11">{sheet.title}</Col>
             <Col>
               <Button size="sm"
-                style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                style={buttonStyle} 
                 onClick={e => props.action('NEW', { sheet: sheet })} >+
               </Button>
             </Col>

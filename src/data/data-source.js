@@ -38,7 +38,6 @@ export function getSheetList(dsid) {
   return [
     { kind: 'home', label: 'Home' },
     { kind: 'dataset', dsid: dsid, label: ds.label },
-    ...tbs(dsid).map(t => ({ kind: 'grid', dsid: dsid, tableid: t.tableid, label: t.label })),
     ...tbs(dsid).map(t => ({ kind: 'table', dsid: dsid, tableid: t.tableid, label: t.label })),
     ...shs(dsid).map(s => ({ kind: 'sheet', dsid: dsid, sheetid: s.id, label: s.label })),
   ];
@@ -50,7 +49,6 @@ export function getSheet(args) {
   const func = {
     'home': () => getSheetHome(),
     'dataset': () => getSheetDataset(dataStore.dataset_get(args.dsid)),
-    'grid': () => getSheetGrid(dataStore.dataset_get(args.dsid), getConnectedTable(args.dsid, args.tableid)),
     'table': () => getSheetTable(dataStore.dataset_get(args.dsid), getConnectedTable(args.dsid, args.tableid)),
     'sheet': () => dataStore.sheet_get(args.dsid, args.sheetid), // BUG: table may be stale
   }[args.kind];
@@ -186,18 +184,6 @@ function getSheetDataset(ds) {
       { kind: 'table', title: table.title, table: table, },
     ],
   }
-}
-
-// construct a grid sheet for a single table
-function getSheetGrid(ds, table) {
-  return {
-    sheetid: table.tableid,
-    dsid: ds.id,
-    label: table.label,
-    title: table.title,
-    blocks: [
-      { kind: table.transpose ? 'trans' : 'grid', title: table.title, table: table },
-  ]}
 }
 
 // construct a table sheet for a single table
