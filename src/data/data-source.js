@@ -38,6 +38,7 @@ export function getSheetList(dsid) {
   return [
     { kind: 'home', label: 'Home' },
     { kind: 'dataset', dsid: dsid, label: ds.label },
+    ...tbs(dsid).map(t => ({ kind: 'grid', dsid: dsid, tableid: t.tableid, label: t.label })),
     ...tbs(dsid).map(t => ({ kind: 'table', dsid: dsid, tableid: t.tableid, label: t.label })),
     ...shs(dsid).map(s => ({ kind: 'sheet', dsid: dsid, sheetid: s.id, label: s.label })),
   ];
@@ -49,6 +50,7 @@ export function getSheet(args) {
   const func = {
     'home': () => getSheetHome(),
     'dataset': () => getSheetDataset(dataStore.dataset_get(args.dsid)),
+    'grid': () => getSheetGrid(dataStore.dataset_get(args.dsid), getConnectedTable(args.dsid, args.tableid)),
     'table': () => getSheetTable(dataStore.dataset_get(args.dsid), getConnectedTable(args.dsid, args.tableid)),
     'sheet': () => dataStore.sheet_get(args.dsid, args.sheetid), // BUG: table may be stale
   }[args.kind];
@@ -138,7 +140,10 @@ function addAll() {
 function getTableDatasets() {
   return { 
     ...dataset_table,
-    data: dataStore.dataset_all(), // TODO: get tables
+    data: dataStore.dataset_all().map(d => ({
+      ...d,
+      tables: dataStore.table_all(d.datasetid),
+    })),
   }
 }
 
@@ -183,7 +188,19 @@ function getSheetDataset(ds) {
   }
 }
 
-// construct a sheet for a single table
+// construct a grid sheet for a single table
+function getSheetGrid(ds, table) {
+  return {
+    sheetid: table.tableid,
+    dsid: ds.id,
+    label: table.label,
+    title: table.title,
+    blocks: [
+      { kind: table.transpose ? 'trans' : 'grid', title: table.title, table: table },
+  ]}
+}
+
+// construct a table sheet for a single table
 function getSheetTable(ds, table) {
   return {
     sheetid: table.tableid,
@@ -191,7 +208,7 @@ function getSheetTable(ds, table) {
     label: table.label,
     title: table.title,
     blocks: [
-      { kind: table.transpose ? 'tuple' : 'table', title: table.title, table: table },
+      { kind: table.transpose ? 'trans' : 'table', title: table.title, table: table },
   ]}
 }
 
@@ -204,7 +221,7 @@ function getSheetPair(ds, table) {
     title: table.title,
     blocks: [
       { kind: 'table', title: 'Regular table', table: table },
-      { kind: 'tuple', title: 'Transposed table', table: table },
+      { kind: 'trans', title: 'Transposed table', table: table },
   ]}
 }
 

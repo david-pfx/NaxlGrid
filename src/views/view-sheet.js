@@ -19,6 +19,8 @@ export default function(props) {
   const sidebarBgColor = 'palegreen';
   const titleStyle = { fontWeight: 'bold', fontSize: '1.5rem', textAlign: 'center' };
 
+  document.title = `Naxl - ${sheet.title}`;
+
   return (
     <Container fluid style={{ lineHeight: 1.2, backgroundColor: titleBgColor }}>
       <Row>

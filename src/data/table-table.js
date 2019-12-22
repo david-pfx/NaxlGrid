@@ -6,7 +6,8 @@ export default {
 	title: `Available tables in dataset`,
 	icon: 'table.gif',
 	fields: [
-		{ fieldid: 'id', type: 'text', label: 'Id', width: 10, },
+		{ fieldid: 'id', type: 'integer', label: 'Id', width: 10, },
+		{ fieldid: 'tableid', type: 'text', label: 'Table Id', },
 		{ fieldid: 'label', type: 'text', label: 'Label', },
 		{ fieldid: 'title', type: 'text', label: 'Title', },
 		{ fieldid: 'icon', type: 'image', label: 'Icon', },

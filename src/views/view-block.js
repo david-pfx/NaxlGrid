@@ -10,6 +10,7 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 
 import ViewGrid from './view-grid';
+import ViewTable from './view-table';
 import ViewTranspose from './view-transpose';
 const imageUrl = '/image/'; // config
 
@@ -50,7 +51,7 @@ export default function(props) {
           )}
         </Card>
       )
-    case 'table':
+    case 'grid':
       return (
         <Card style={cardStyle}>
           <Card.Title style={subtitleStyle}>
@@ -70,16 +71,37 @@ export default function(props) {
           <ViewGrid table={block.table} />
         </Card>
       )
-    case 'tuple':
-      return (
-        <Card style={cardStyle}>
-          <Card.Title style={subtitleStyle}>
-            <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
-            {block.title}
-          </Card.Title>
-          <ViewTranspose table={block.table} />
-        </Card>
-      )
+      case 'table':
+      case 'trans':
+        return (
+          <Card style={cardStyle}>
+            <Card.Title style={subtitleStyle}>
+            <Row>
+              <Col>
+                <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
+                {block.title}
+              </Col>
+              <Col>
+                <Button 
+                  size="sm"
+                  style={{ marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'}} 
+                  onClick={e => props.action('NEW', { tableid: block.table.tableid })} >+</Button>
+              </Col>
+              </Row>
+            </Card.Title>
+            <ViewTable table={block.table} istrans={block.kind == 'trans'} />
+          </Card>
+        )
+      // case 'trans':
+      // return (
+      //   <Card style={cardStyle}>
+      //     <Card.Title style={subtitleStyle}>
+      //       <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
+      //       {block.title}
+      //     </Card.Title>
+      //     <ViewTranspose table={block.table} />
+      //   </Card>
+      //)
     default:
       return <div>bad kind</div>;
   }

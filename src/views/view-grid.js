@@ -1,9 +1,14 @@
-// display block as table
+// display block as table using react grid
 
 import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
+import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import Format from '../util/format';
+
+const cellEdit = cellEditFactory({
+  mode: 'click',
+});
 
 ////////////////////////////////////////////////////////////////////////////////
 // Component to view a table in grid format
@@ -46,6 +51,7 @@ export default function(props) {
       hover condensed
       tabIndexCell
       bootstrap4
+      cellEdit={cellEdit}
     />
   </div>
 }
