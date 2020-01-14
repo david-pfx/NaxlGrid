@@ -46,7 +46,7 @@ export default class App extends React.Component {
     //console.log('sellist', sel);
     return <ViewSheet 
       sheet={this.state.sheet} 
-      action={(action, args) => this.doAction(action, args)}
+      doaction={(action, args) => this.doAction(action, args)}
       selectors={selpairs} />;
   }
 }

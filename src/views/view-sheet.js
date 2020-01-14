@@ -36,12 +36,19 @@ export default function(props) {
         <Col lg={1} key={1}
           style={sidebarStyle}>
             <Row>
-              <Image src="n-logo.png" height="40" style={{ marginLeft: 'auto', marginRight: 'auto' }}/>
+              <Image 
+                src="n-logo.png" 
+                height="40" 
+                style={{ marginLeft: 'auto', marginRight: 'auto' }} />
             </Row>
             { // A button for each sheet in the left sidebar
               props.selectors.map((s,x) => 
                 <Row key={x}>
-                  <Button block style={{ margin: '0.3rem'}} onClick={e => s.select() }>{ s.label }</Button>
+                  <Button block 
+                    style={{ margin: '0.3rem'}} 
+                    onClick={e => s.select() }>
+                      { s.label }
+                  </Button>
                 </Row>) 
             }
         </Col>
@@ -51,11 +58,16 @@ export default function(props) {
             <Col>
               <Button size="sm"
                 style={buttonStyle} 
-                onClick={e => props.action('NEW', { sheet: sheet })} >+
+                onClick={e => props.doaction('NEW', { sheet: sheet })} >+
               </Button>
             </Col>
           </Row>
-          { sheet.blocks.map((b,x) => <ViewBlock key={x} block={b} action={props.action} />) }
+          { 
+            sheet.blocks.map((b,x) => <ViewBlock 
+              key={x} 
+              block={b} 
+              doaction={props.doaction} />) 
+          }
         </Col>
       </Row>
     </Container>

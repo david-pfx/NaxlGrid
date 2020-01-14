@@ -10,7 +10,6 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 
 import ViewTable from './view-table';
-import ViewTranspose from './view-transpose';
 const imageUrl = '/image/'; // config
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +27,7 @@ export default function(props) {
 
   switch (block.kind) {
     case 'note':
+      // view a note block
       return (
         <Card style={cardStyle}>
           <Card.Title style={subtitleStyle}>
@@ -40,7 +40,7 @@ export default function(props) {
               <Button 
                 size="sm"
                 style={buttonStyle} 
-                onClick={e => props.action('NEW', { noteid: block.table.tableid })} >+</Button>
+                onClick={e => props.doaction('NEW', { noteid: block.table.tableid })} >+</Button>
             </Col>
             </Row>
           </Card.Title>
@@ -53,23 +53,30 @@ export default function(props) {
       )
       case 'table':
       case 'trans':
+        // view a table block
         return (
           <Card style={cardStyle}>
             <Card.Title style={subtitleStyle}>
             <Row>
               <Col>
-                <Image src={imageUrl + block.table.icon} width='20px' />&nbsp;
+                <Image 
+                  src={imageUrl + block.table.icon} 
+                  width='20px' />
+                &nbsp;
                 {block.title}
               </Col>
               <Col>
                 <Button 
                   size="sm"
                   style={buttonStyle} 
-                  onClick={e => props.action('NEW', { tableid: block.table.tableid })} >+</Button>
+                  onClick={e => props.doaction('NEW', { tableid: block.table.tableid })} >+</Button>
               </Col>
               </Row>
             </Card.Title>
-            <ViewTable table={block.table} istrans={block.kind === 'trans'} />
+            <ViewTable 
+              table={block.table} 
+              istrans={block.kind === 'trans'}
+              doaction={props.doaction} />
           </Card>
         )
     default:

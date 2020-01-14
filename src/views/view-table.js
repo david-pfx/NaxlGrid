@@ -2,11 +2,13 @@
 
 import React from 'react';
 import Table from 'react-bootstrap/Table';
+//import PropTypes from 'prop-types'
+//import { Link } from 'react-router-dom'
+import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
+import { faFilter, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
+//import { faCheckSquare, faFilter, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 import Format from '../util/format';
-
-import PropTypes from 'prop-types'
-//import { Link } from 'react-router-dom'
 
 //import './view-table.scss' 
 
@@ -27,8 +29,11 @@ function getColumns(table) {
 			backgroundColor: 'tomato',
 			fontWeight: 'bold',
 		} : {},
-		formatter: cell => Format.format(cell, f.type, f.list),
 		align: Format.textAlign(f.type),
+		formatter: cell => Format.format(f, cell),
+		inputter: colx > 0 && Format.input(f) && ((cell,ridx,cbs) => Format.input(f, cell, cbs)),
+		sort: colx > 0 && 'none',
+		filter: colx > 0 && 'none',
 	}));
 }
 
@@ -48,65 +53,138 @@ function getColumnsTrans(table) {
 				fontWeight: 'bold' ,
 			} : {},
 		formatter: (cell, ridx) => (colx === 0) ? cell
-			:	Format.format(cell, table.fields[ridx+1].type, table.fields[ridx+1].list),
+			:	Format.format(table.fields[ridx+1], cell),
+		//inputter: (cell,ridx,cbs) => colx > 0 && Format.input(table.fields[ridx+1]) && Format.input(table.fields[ridx+1], cell, cbs),
 	}));
 }
 
-function tableHeader(columns) {
+// construct a table header
+function makeHeader(columns) {
+	const sorticon = s => s ==='up' ? faSortUp : s === 'down' ? faSortDown : faSort;
+	const filtericon = f => faFilter;
 	return (
 		<tr>
 			{columns.map((c,x) =>
-				<th id={x} key={x} style={c.headerStyle} >
+				<th id={x} key={x} style={c.headerStyle} onClick={() => {}} >
 					{c.text}
+					{(c.sort || c.filter) && <div style={{ fontWeight: '100', color: 'gray', float: 'right' }}>
+						{c.sort && <FaIcon icon={sorticon(c.sort)} />}
+						{c.filter && <FaIcon icon={filtericon(c.filter)} />}
+					</div>}
 				</th>
 			)}
 		</tr>
 	)
 }
 
-function tableCell(row, column, ridx) {
+// construct a single table cell, display or edit
+function makeCell(row, column, ridx, cbs) {
 	const value = row[column.dataField];
-	const formatted = column.formatter(value, ridx);
-	return <td key={column.id} style={column.style}>
-		{formatted}
+
+	// handlers
+	const onclick = (e) => {
+		e.stopPropagation();
+		cbs.setedit(ridx, column.id);
+	}
+	const onchange = (e) => {
+		cbs.setedit(ridx, column.id, e.target.value);
+	}
+	const onkeypress = (e) => {
+		if (e.key === 'Enter') cbs.saveitem();
+	}
+
+	const contents = (column.inputter && cbs.isedit(ridx, column.id)) 
+		? column.inputter(cbs.getnewvalue() || value, ridx, { 
+				onchange: onchange,
+				onkeypress: onkeypress,
+			}) 
+		: column.formatter(value, ridx);
+
+	return <td key={column.id} 
+			style={column.style} 
+			onClick={onclick}>
+		{contents}
 	</td>
 }
 
-function tableRow(row, columns, ridx) {
+// return a single table row
+function makeRow(row, columns, ridx, callbacks) {
 	const style = {
 		backgroundColor: (ridx % 2 === 0) ? 'lavender' : 'ivory',
 	}
 	return (
 		<tr key={ridx} style={style}>
-			{columns.map(c => tableCell(row, c, ridx))}
+			{columns.map(c => makeCell(row, c, ridx, callbacks))}
 		</tr>
 	);
 }
-function tableBody(table, istrans) {
+
+// return a table body
+function makeBody(table, istrans, callbacks) {
 	const style = {
 		tableLayout: 'fixed',
 	};
 	const columns = (istrans) ?  getColumnsTrans(table) : getColumns(table);
 	const rows = (istrans) ? table.tdata : table.data;
 	return (
-		<Table striped bordered hover responsive
-				style={style}
-				size="sm">
+		<Table striped bordered hover responsive size="sm"
+			style={style} 
+			onClick={() => callbacks.setedit()}>
 			<thead>
-				{tableHeader(columns)}
+				{makeHeader(columns)}
 			</thead>
 			<tbody>
-				{rows.map((r,x) => tableRow(r, columns, x)) }
+				{rows.map((r,x) => makeRow(r, columns, x, callbacks)) }
 			</tbody>
 		</Table>
 	);
 }
 
-export default function(props) {
-		return tableBody(props.table, props.istrans);
-		
+// return a complete table
+// transient state for edit mode
+export default class extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { }
+	}
+	
+	callBacks = { 
+		isedit: (r,c) => r === this.state.ridx && c === this.state.cidx,
+		setedit: (r,c,v) => this.setEdit(r,c,v),
+		onclick: (e,r,c) => {
+			e.stopPropagation();
+			this.setEdit(r, c);
+		},
+		onchange: (e,r,c) => {
+			this.setEdit(r, c, e.target.value);
+		},
+		getnewvalue: () => this.state.newvalue,
+		saveitem: () => {
+			this.props.doaction('ITEM', { 
+				tableid: this.props.table.tableid, 
+				ridx: this.state.ridx, 
+				cidx: this.state.cidx, 
+				value: this.state.newvalue,
+			});
+			this.setEdit();
+		},
+	}
+
+	setEdit(ridx, cidx, value) {
+			//console.log('setedit', ridx, cidx, value);
+			this.setState({ 
+			ridx: ridx, 
+			cidx: cidx,
+			newvalue: value,
+		});
+	}
+	
+	render() {
+		return makeBody(this.props.table, this.props.istrans, this.callBacks);
+
 		// const body =  (this.state.error) ? <Alert type="danger"  title="Error" message={this.state.error.message}/> 
 		// 	: (this.state.loading) ? <Spinner></Spinner> 
 		// 	: tableBody(table.fields, table.data);
+	}
 }
 

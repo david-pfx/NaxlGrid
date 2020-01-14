@@ -1,24 +1,25 @@
 // Helpers for string, numbers, and date formats
 
-import React from 'react'
-import numeral from 'numeral'
-import moment from 'moment'
-import Badge from 'react-bootstrap/badge'
-
-import * as Resource from './resource'
+import React from 'react';
+import numeral from 'numeral';
+import moment from 'moment';
+import Badge from 'react-bootstrap/badge';
+import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 // include locale support for a few chosen countries -- add more as needed
-import 'moment/locale/en-gb'
-import 'moment/locale/en-au'
-import 'moment/locale/fr'
-import 'moment/locale/de'
-import 'moment/locale/es'
+import 'moment/locale/en-gb';
+import 'moment/locale/en-au';
+import 'moment/locale/fr';
+import 'moment/locale/de';
+import 'moment/locale/es';
+
+import * as Resource from './resource';
+import inputField from './input-field';
 
 const locale = null;  // config
 export const imageUrl = '/image/'; // config
 const fileUrl = '/file/'; // config
-const classTrue = 'fas fa-check';
-const classFalse = 'fas fa-times';
 
 // Set the locale from the browser -- which may need to be configured
 moment.locale(locale || window.navigator.userLanguage || window.navigator.language)
@@ -32,7 +33,7 @@ const formatSimple = {
     hidden: d => '',
     text: d => '' + d,
     textmultiline: d => d,
-    boolean: d => <i className={ d ? classTrue : classFalse }></i>,
+    boolean: d => <FaIcon icon={d ? faCheck : faTimes} />,
     date: d => moment(d).format('L'),
     time: d => moment(d).format('LTS'),
     datetime: d => moment(d).format('L LTS'),
@@ -89,11 +90,11 @@ export default {
 
     // simple pure functions that format a value according to its type
     // may return either string or JSX
-    format: (data, type, list) => formatAll(data, type, list),
+    format: (field, data) => formatAll(data, field.type, field.list),
 
     // make it shorter for table layout
     // TODO: url show domain 
-    formatBrief(d, f) {
+    formatBrief(f, d) {
         return (f.type === 'json' && d) ? '<json>'
         : this.format(d, f.type, f.list)
     },
@@ -111,5 +112,7 @@ export default {
         : type === 'lov' ? 30
         : 40;
     },
+
+    input: (field, data, cbs) => inputField(field, data, cbs),
 
 };
