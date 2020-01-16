@@ -61,25 +61,25 @@ const formatSimple = {
 
 // format data value according to its type with possible list 
 // may return string or JSX
-function formatAll(data, type, list) {
-    if (data === null || data === undefined) return '';
+function formatAll(value, type, list) {
+    if (value === null || value === undefined) return '';
     // for simple lookup, just a list of ids and values
     if (type === 'lov') {
-        const vv = list && list.find(v => v.id === data);
-        return vv ? <Badge pill variant="primary" style={{ backgroundColor: Resource.pickColour(0,data)}}>{vv.text}</Badge> 
-            : '[' + data + ']';
+        const vv = list && list.find(v => v.id === value);
+        return vv ? <Badge pill variant="primary" style={{ backgroundColor: Resource.pickColour(0,value)}}>{vv.text}</Badge> 
+            : '[' + value + ']';
     }
     // for table lookup, list is the target table
     if (type === 'lookup' && list) {
-        const row = list.data.find(v => v.id === data);
+        const row = list.rows.find(v => v.id === value);
         return row 
             ? <span style={{ color: 'green' }}>
                 {formatAll(row[list.field.fieldid], list.field.type)}
               </span> 
-            : '[' + data + ']';
+            : '[' + value + ']';
     }
     if (!formatSimple[type]) return 'bad type';
-    return formatSimple[type](data);
+    return formatSimple[type](value);
 }
 
 export default {
@@ -90,7 +90,7 @@ export default {
 
     // simple pure functions that format a value according to its type
     // may return either string or JSX
-    format: (field, data) => formatAll(data, field.type, field.list),
+    format: (field, value) => formatAll(value, field.type, field.list),
 
     // make it shorter for table layout
     // TODO: url show domain 
@@ -113,6 +113,6 @@ export default {
         : 40;
     },
 
-    input: (field, data, cbs) => inputField(field, data, cbs),
+    input: (field, value, cbs) => inputField(field, value, cbs),
 
 };

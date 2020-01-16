@@ -6,7 +6,7 @@ import Format from '../util/format';
 
 // construct input field, given data and callback
 // or just return true if an editable field
-export default function(field, data, cbs) {
+export default function(field, value, cbs) {
 
 	const usualProps = {
     id: field.id,
@@ -17,11 +17,12 @@ export default function(field, data, cbs) {
 	}
 	
 	// construct a simple typed input field
+	// make sure value is defined so component is controlled
 	const inputTyped = (type, props) => 
 		<input {...usualProps}
 			{...props}
 			type={type} 
-			value={data}
+			value={value || ''}
 		/>;
 
 	// construct select input field
@@ -32,7 +33,7 @@ export default function(field, data, cbs) {
 			</option>;
 		return (
 			<select {...usualProps}
-				value={data} >
+				value={value} >
 				<option/>
 				{field.list.map(o => option(o))}
 			</select>
@@ -43,13 +44,13 @@ export default function(field, data, cbs) {
 	const inputDate = () => inputTyped('date');
 		// <React.Fragment>
 		// 	<Datepicker {...usualProps}
-		// 		selected={ data ? new Date(data) : null }
+		// 		selected={ value ? new Date(value) : null }
 		// 	/>
 		// </React.Fragment>;
 
   const inputSimple = {
-		boolean: () => <input {...usualProps} type="checkbox" checked={data ? true : false} />,
-		textmultiline: () => <textarea {...usualProps} value={Format.format(field, data)} />,
+		boolean: () => <input {...usualProps} type="checkbox" checked={value ? true : false} />,
+		textmultiline: () => <textarea {...usualProps} value={Format.format(field, value)} />,
 		lov: () => inputSelect(),
 		list: () => inputSelect(),
 		date: () => inputDate(),
@@ -62,5 +63,6 @@ export default function(field, data, cbs) {
 	};
 
 	const f = inputSimple[field.type];
-	return (data === null || data === undefined) ? !!f : f();
+	return f && f();
+	//return (value === null || value === undefined) ? !!f : f();
 }

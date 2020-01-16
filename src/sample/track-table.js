@@ -25,5 +25,5 @@ export default {
 		{ fieldid: "length", type: "text", label: "Length", width: 10 },
 		{ fieldid: "genre", type: "lov", label: "Genre", list: genre_list },
 	],
-	data: track_data.map((row, x) => ({ ...row, id: x+1 })),
+	rows: track_data.map((row, x) => ({ ...row, id: x+1 })),
 }

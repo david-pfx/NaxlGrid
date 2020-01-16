@@ -21,7 +21,7 @@ export default {
     { fieldid: 'startdate',  type: 'date',     label: 'Start date' },
     { fieldid: 'deadline',   type: 'datetime', label: 'Deadline' },
   ],
-  data: [{
+  rows: [{
     id: 1,
     owner: 'Fred Smith',
     light: 2,

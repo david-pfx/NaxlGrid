@@ -14,5 +14,5 @@ export default {
 		{ fieldid: "photo", type: "image", label: "Photo" },
 		{ fieldid: "description", type: "textmultiline", label: "Description" },
 	],
-	data: artist_data.map((row, x) => ({ ...row, id: x+1 })),
+	rows: artist_data.map((row, x) => ({ ...row, id: x+1 })),
 }

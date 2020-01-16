@@ -1,7 +1,7 @@
 // template for table of tables
 
 export default {
-	tableid: 'table',
+	tableid: '$table',
 	label: 'Tables',
 	title: `Available tables in dataset`,
 	icon: 'table.gif',
@@ -12,7 +12,7 @@ export default {
 		{ fieldid: 'title', type: 'text', label: 'Title', },
 		{ fieldid: 'icon', type: 'image', label: 'Icon', },
 		{ fieldid: 'fields', type: 'array', label: 'Fields', },
-		{ fieldid: 'data', type: 'array', label: 'Rows', },
+		{ fieldid: 'rows', type: 'array', label: 'Rows', },
 	],
-	data: [],
+	rows: [],
 }

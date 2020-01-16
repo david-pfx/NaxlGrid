@@ -8,6 +8,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
+import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import ViewTable from './view-table';
 const imageUrl = '/image/'; // config
@@ -40,7 +42,9 @@ export default function(props) {
               <Button 
                 size="sm"
                 style={buttonStyle} 
-                onClick={e => props.doaction('NEW', { noteid: block.table.tableid })} >+</Button>
+                onClick={e => props.doaction('NEW', { noteid: block.table.tableid })} >
+                  <FaIcon icon={faPlus} />
+                </Button>
             </Col>
             </Row>
           </Card.Title>
@@ -65,18 +69,21 @@ export default function(props) {
                 &nbsp;
                 {block.title}
               </Col>
-              <Col>
-                <Button 
-                  size="sm"
-                  style={buttonStyle} 
-                  onClick={e => props.doaction('NEW', { tableid: block.table.tableid })} >+</Button>
-              </Col>
-              </Row>
+            </Row>
             </Card.Title>
+
             <ViewTable 
               table={block.table} 
               istrans={block.kind === 'trans'}
               doaction={props.doaction} />
+              
+            <div>
+              <Button size="sm"
+                style={{ marginTop: '-1rem' }}
+                onClick={e => props.doaction('NEW', { tableid: block.table.tableid })} >
+                <FaIcon icon={faPlus} />
+              </Button>
+            </div>
           </Card>
         )
     default:

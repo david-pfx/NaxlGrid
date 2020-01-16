@@ -47,7 +47,7 @@ export default function(props) {
   
   return <div>
       <BootstrapTable keyField='id'
-        data={rows}
+        rows={rows}
         columns={columns}
         bordered={true}
         rowStyle={rowStyle}

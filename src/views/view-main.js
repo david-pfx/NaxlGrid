@@ -30,7 +30,10 @@ export default class App extends React.Component {
   }
 
   doAction(action, args) {
-    Data.doAction(action, { ...args, dsid: this.state.dsid });
+    Data.doAction(action, { 
+      ...args, 
+      datasetid: this.state.dsid 
+    });
     this.setState({
       sheet: Data.getSheet(this.state.sel),
     })

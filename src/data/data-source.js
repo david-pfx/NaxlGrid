@@ -57,28 +57,34 @@ export function getSheet(args) {
 
 // available actions
 export function doAction(action, payload) {
-  console.log('do action', action, payload);
+  console.log(`do action: ${action}, payload: ${JSON.stringify(payload)}`);
   if (action === 'NEW') {
     if (payload.tableid)
       return doNewTable(payload);
     if (payload.sheet)
       return doNewSheet(payload);
-    alert(`action: ${action}, payload: ${JSON.stringify(payload)}`);
+  } else if (action === 'PUT') {
+    if (payload.tableid === '$dataset')
+      return dataStore.dataset_put(payload.newrow);
+    if (payload.tableid === '$table')
+      return dataStore.table_put(payload.datasetid, payload.newrow);
+    return dataStore.row_put(payload.datasetid, payload.tableid, payload.newrow);
   }
+  alert('oops');
 }
 
-function doNewTable({ dsid, tableid }) {
-  if (tableid === 'home') {
-    dataStore.dataset_add({
+function doNewTable({ datasetid, tableid }) {
+  if (tableid === '$dataset') {
+    dataStore.dataset_put({
       datasetid: 'new-dataset', 
       label: '<new-dataset>', 
       title: 'New Dataset', 
       description: '', 
       notes: [],
     });
-  } else if (tableid === 'table') {
+  } else if (tableid === '$table') {
     //assert.ok(dsid);
-    dataStore.table_add(dsid, {
+    dataStore.table_put(datasetid, {
       tableid: 'new-table',
       label: '<new-table>',
       title: 'New Table',
@@ -88,20 +94,20 @@ function doNewTable({ dsid, tableid }) {
         { fieldid: "field1", type: "text", label: "Field 1", },
         { fieldid: "field2", type: "text", label: "Field 2", },
       ],
-      data: [],
+      rows: [],
     });
   } else {
     //assert.ok(dsid);
     //assert.ok(tableid);
-    const table = dataStore.table_get(dsid, tableid);
+    const table = dataStore.table_get(datasetid, tableid);
     const newrow = table.fields.reduce((acc, f) => ({ ...acc, [f.id]: '' }), {});
     console.log('table', table, 'newrow', newrow);
-    dataStore.row_add(dsid, tableid, newrow);
+    dataStore.row_put(datasetid, tableid, newrow);
   } 
 }
 
 function doNewSheet({ dsid }) {
-  dataStore.sheet_add(dsid, {
+  dataStore.sheet_put(dsid, {
     sheetid: 'new-sheet',
     label: '<new-sheet>',
     title: 'New Sheet',
@@ -113,9 +119,9 @@ function doNewSheet({ dsid }) {
 
 // set up all initial data
 function addAll() {
-  const add_dss = (dss) => dss.forEach(ds => dataStore.dataset_add(ds));
-  const add_tbs = (id, tbs) => tbs.forEach(tb => dataStore.table_add(id, tb));
-  const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_add(id, sh));
+  const add_dss = (dss) => dss.forEach(ds => dataStore.dataset_put(ds));
+  const add_tbs = (id, tbs) => tbs.forEach(tb => dataStore.table_put(id, tb));
+  const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_put(id, sh));
 
   add_dss([{
     datasetid: 'novels', label: 'Novels', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
@@ -134,11 +140,11 @@ function addAll() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// datasets table
+// table of datasets
 function getTableDatasets() {
   return { 
     ...dataset_table,
-    data: dataStore.dataset_all().map(d => ({
+    rows: dataStore.dataset_all().map(d => ({
       ...d,
       tables: dataStore.table_all(d.datasetid),
     })),
@@ -150,7 +156,7 @@ function getTableTables(ds) {
   return {
     ...table_table,
     title: `Available tables in dataset ${ds.label}`,
-    data: dataStore.table_all(ds.datasetid),
+    rows: dataStore.table_all(ds.datasetid),
   }
 }
 
@@ -224,7 +230,7 @@ function getConnectedTable(dsid, tbid) {
       // if ok construct a pair of table data and relevant field
       if (table && field) {
         f.list = {
-          data: table.data,
+          rows: table.rows,
           field: field,
         }
         console.log('fixtables', f);
@@ -239,14 +245,14 @@ function transposeTable(table) {
   // transpose fields: column name then one per row
   const tfields = [
     { fieldid: 'id', type: 'text', label: 'Name', },
-      ...table.data.map(d => ({ 
+      ...table.rows.map(d => ({ 
         fieldid: d.id + '', type: 'transpose', label: d.id + '' 
       })),
     ];
 
   // transpose data: one row per column
   const tdata = table.fields.slice(1).map(f => {
-    return table.data.reduce((acc, d) => {
+    return table.rows.reduce((acc, d) => {
       acc[d.id] = d[f.fieldid];
       return acc;
     }, { id: f.label });

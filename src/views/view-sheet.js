@@ -7,6 +7,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
+import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import ViewBlock from './view-block';
 
@@ -58,7 +60,8 @@ export default function(props) {
             <Col>
               <Button size="sm"
                 style={buttonStyle} 
-                onClick={e => props.doaction('NEW', { sheet: sheet })} >+
+                onClick={e => props.doaction('NEW', { sheet: sheet })}>
+                <FaIcon icon={faPlus} />
               </Button>
             </Col>
           </Row>

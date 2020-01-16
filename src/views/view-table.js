@@ -84,25 +84,34 @@ function makeCell(row, column, ridx, cbs) {
 	// handlers
 	const onclick = (e) => {
 		e.stopPropagation();
-		cbs.setedit(ridx, column.id);
+		cbs.setedit(ridx, column.id, value);
 	}
 	const onchange = (e) => {
 		cbs.setedit(ridx, column.id, e.target.value);
 	}
+	// 
+	const onkeydown = (e) => {
+		//console.log('keydown', e.key);
+		if (e.key === 'Enter') cbs.saveitem(row, column);
+		else if (e.key === 'Escape') cbs.setedit();
+	}
 	const onkeypress = (e) => {
-		if (e.key === 'Enter') cbs.saveitem();
+		//console.log('keypress', e.key);
+		// if (e.key === 'Enter') cbs.saveitem(row, column);
+		// else if (e.key === 'Escape') cbs.setedit();
 	}
 
 	const contents = (column.inputter && cbs.isedit(ridx, column.id)) 
-		? column.inputter(cbs.getnewvalue() || value, ridx, { 
+		? column.inputter(cbs.getnewvalue(), ridx, { 
 				onchange: onchange,
-				onkeypress: onkeypress,
 			}) 
 		: column.formatter(value, ridx);
 
 	return <td key={column.id} 
 			style={column.style} 
-			onClick={onclick}>
+			onClick={onclick}
+			onKeyPress={onkeypress}
+			onKeyDown={onkeydown}>
 		{contents}
 	</td>
 }
@@ -125,7 +134,7 @@ function makeBody(table, istrans, callbacks) {
 		tableLayout: 'fixed',
 	};
 	const columns = (istrans) ?  getColumnsTrans(table) : getColumns(table);
-	const rows = (istrans) ? table.tdata : table.data;
+	const rows = (istrans) ? table.tdata : table.rows;
 	return (
 		<Table striped bordered hover responsive size="sm"
 			style={style} 
@@ -159,12 +168,13 @@ export default class extends React.Component {
 			this.setEdit(r, c, e.target.value);
 		},
 		getnewvalue: () => this.state.newvalue,
-		saveitem: () => {
-			this.props.doaction('ITEM', { 
+		saveitem: (row, column) => {
+			this.props.doaction('PUT', { 
 				tableid: this.props.table.tableid, 
-				ridx: this.state.ridx, 
-				cidx: this.state.cidx, 
-				value: this.state.newvalue,
+				newrow: {
+					id: row.id,
+					[column.dataField]: this.state.newvalue,
+				}
 			});
 			this.setEdit();
 		},
@@ -181,10 +191,6 @@ export default class extends React.Component {
 	
 	render() {
 		return makeBody(this.props.table, this.props.istrans, this.callBacks);
-
-		// const body =  (this.state.error) ? <Alert type="danger"  title="Error" message={this.state.error.message}/> 
-		// 	: (this.state.loading) ? <Spinner></Spinner> 
-		// 	: tableBody(table.fields, table.data);
 	}
 }
 

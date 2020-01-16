@@ -1,7 +1,7 @@
 // data store holding all data state
 // time-travelling immutable
 
-export default { undo, redo, dataset_all, dataset_get, dataset_add, sheet_all, sheet_get, sheet_add, table_all, table_get, table_add, row_add };
+export default { undo, redo, dataset_all, dataset_get, dataset_put, sheet_all, sheet_get, sheet_put, table_all, table_get, table_put, row_put };
 
 const initialState = {
   datasets: [],
@@ -62,60 +62,63 @@ function sheet_get(dsid, shid) {
   return topStack().sheets.find(t => t.datasetid === dsid && t.id === shid);
 }
 
-// add dataset
-function dataset_add(ds) {
-  const newds = { 
-    notes: [], 
-    ...ds,
-    id: topStack().datasets.length + 1,
-  };
+// put dataset, new or merge on id
+function dataset_put(ds) {
+  const newds = (ds.id) 
+    ? topStack().datasets.map(d => d.id === ds.id ? { ...d, ...ds } : d)
+    : [ ...topStack().datasets, {  
+        id: topStack().datasets.length + 1,
+        notes: [], 
+        ...ds,
+      } ];
   // validate here
   pushNext({ 
     ...topStack(), 
-    datasets: [ ...topStack().datasets.filter(d => d.datasetid !== ds.datasetid), newds ], 
+    datasets: newds, 
   });
 }
 
-// add sheet to dataset
-function sheet_add(dsid, sh) {
-  const newsh = {
-    data: [], 
-    ...sh,
-    datasetid: dsid,
-    id: topStack().sheets.length + 1,
-  }
+// put sheet in dataset, new or merge on id
+function sheet_put(dsid, sh) {
+  const newsh = (sh.id) 
+    ? topStack().sheets.map(s => s.id === sh.id ? { ...s, ...sh } : s)
+    : [ ...topStack().sheets, {  
+        id: topStack().sheets.length + 1,
+        rows: [], 
+        datasetid: dsid,
+        ...sh,
+      } ];
+  // validate here
   pushNext({ 
     ...topStack(), 
-    sheets: [ ...topStack().sheets.filter(s => s.id !== sh.id), newsh ] ,
+    sheets: newsh, 
   });
 }
 
-// add table to dataset
-function table_add(dsid, tb) {
-  const newtb = {
-    data: [], 
-    ...tb,
-    datasetid: dsid,
-    id: topStack().tables.length + 1,
-  }
+// put table in dataset, new or merge on id
+function table_put(dsid, tb) {
+  const newtb = (tb.id) 
+    ? topStack().tables.map(t => t.id === tb.id ? { ...t, ...tb } : t)
+    : [ ...topStack().tables, {  
+        id: topStack().tables.length + 1,
+        rows: [], 
+        datasetid: dsid,
+        ...tb,
+      } ];
+  // validate here
   pushNext({ 
     ...topStack(), 
-    tables: [ ...topStack().tables.filter(t => t.id !== tb.id), newtb ],
+    tables: newtb, 
   });
 }
 
-// add row to table in dataset
-function row_add(dsid, tbid, row) {
+// put row to table in dataset, new or merge on id
+function row_put(dsid, tbid, row) {
+  console.log('row_put', dsid, tbid, row);
   const table = table_get(dsid, tbid);
-  const newrow = {
-    ...row,
-    id: table.data.length + 1,
-  }
-  const newtable = { 
-    ...table,
-    data: [ ...table.data.filter(r => r.id !== newrow.id), newrow ],
-  }
-  console.log(newtable);
-  table_add(dsid, newtable);
+  const newrows = (row.id) 
+    ? [ ...table.rows.map(r => r.id === row.id ? { ...r, ...row } : r) ]
+    : [ ...table.rows, { id: table.rows.length + 1, ...row } ];
+  table_put(dsid, { ...table, rows: newrows });
 }
 
