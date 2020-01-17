@@ -26,6 +26,7 @@ moment.locale(locale || window.navigator.userLanguage || window.navigator.langua
 
 const isNumeric = (type) => 'integer,decimal,money'.includes(type);
 const isDate = (type) => 'date,time,datetime'.includes(type);
+const isLookup = (type) => 'lov,list'.includes(type);
 
 // format simple data value according to its type
 // may return string or JSX
@@ -62,7 +63,7 @@ const formatSimple = {
 // format data value according to its type with possible list 
 // may return string or JSX
 function formatAll(value, type, list) {
-    if (value === null || value === undefined) return '';
+    if (value === null || value === undefined || (isLookup(type) && value === 0)) return '';
     // for simple lookup, just a list of ids and values
     if (type === 'lov') {
         const vv = list && list.find(v => v.id === value);
@@ -109,10 +110,14 @@ export default {
     relWidth: (type) => {
         return 'integer,boolean'.includes(type) ? 15
         : isNumeric(type) || isDate(type) ? 20 
-        : type === 'lov' ? 30
+        : isLookup(type) ? 30
         : 40;
     },
 
     input: (field, value, cbs) => inputField(field, value, cbs),
+    validate: (type, value) => {
+        return isNumeric(type) || isLookup(type) ? +value
+            : value;
+    },
 
 };

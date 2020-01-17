@@ -6,6 +6,7 @@
 
 import table_table from './table-table';
 import dataset_table from './dataset-table';
+import test_table from '../sample/test-table';
 import comic_table from '../sample/comic-table';
 import settings_table from '../sample/settings-table';
 
@@ -124,11 +125,17 @@ function addAll() {
   const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_put(id, sh));
 
   add_dss([{
+    datasetid: 'tests', label: 'Test', title: 'Test data', description: 'A collection of test data to exercise lots of stuff', 
+    notes: [ 'This is test data contributed to Evolutility.' ],
+  }]);
+  add_tbs('tests', [ test_table, transposeTable(settings_table) ]);
+  add_shs('tests', [getSheetPair(dataStore.dataset_get('tests'), transposeTable(settings_table))]);
+
+  add_dss([{
     datasetid: 'novels', label: 'Novels', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
     notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
   }]);
-  add_tbs('novels', [transposeTable(settings_table), comic_table]);
-  add_shs('novels', [getSheetPair(dataStore.dataset_get('novels'), transposeTable(settings_table))]);
+  add_tbs('novels', [comic_table]);
 
   add_dss([{
     datasetid: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 

@@ -5,6 +5,7 @@ export default {
   tableid: 'settings',
   label: 'Settings',
   title: 'Current settings',
+  icon: 'test/settings.jpg',
   comment: 'This is a single row table of settings',
 
   // column information

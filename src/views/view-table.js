@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
 //import PropTypes from 'prop-types'
 //import { Link } from 'react-router-dom'
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
@@ -28,10 +29,12 @@ function getColumns(table) {
 		style: colx === 0 ? {
 			backgroundColor: 'tomato',
 			fontWeight: 'bold',
-		} : {},
-		align: Format.textAlign(f.type),
-		formatter: cell => Format.format(f, cell),
-		inputter: colx > 0 && Format.input(f) && ((cell,ridx,cbs) => Format.input(f, cell, cbs)),
+		} : {
+			textAlign: Format.textAlign(f.type),
+		},
+		formatter: value => Format.format(f, value),
+		inputter: colx > 0 && Format.input(f) && ((value,ridx,cbs) => Format.input(f, value, cbs)),
+		validate: value => Format.validate(f.type, value),
 		sort: colx > 0 && 'none',
 		filter: colx > 0 && 'none',
 	}));
@@ -51,11 +54,73 @@ function getColumnsTrans(table) {
 		style: colx === 0 ? { 
 				backgroundColor: 'tomato',
 				fontWeight: 'bold' ,
-			} : {},
+			} : {
+				textAlign: 'left',
+			},
 		formatter: (cell, ridx) => (colx === 0) ? cell
 			:	Format.format(table.fields[ridx+1], cell),
 		//inputter: (cell,ridx,cbs) => colx > 0 && Format.input(table.fields[ridx+1]) && Format.input(table.fields[ridx+1], cell, cbs),
 	}));
+}
+
+// construct a single table cell for input
+function makeCellInput(row, column, ridx, cbs) {
+	// handlers
+	const onchange = (e) => {
+		cbs.setedit(ridx, column.id, column.validate(e.target.value));
+	}
+	const onblur = (e) => {
+		cbs.saveitem();
+	}
+	const onkeydown = (e) => {
+		if (e.key === 'Escape') cbs.setedit();
+	}
+	
+	// format for input as  controlled component
+	const contents = column.inputter(cbs.getnewvalue(), ridx, { 
+		onchange: onchange,
+	});
+
+	return <td key={column.id} 
+		onBlur={onblur}
+		onKeyDown={onkeydown}
+		style={column.style} >
+		{contents}
+	</td>
+}
+
+// construct a single table cell for display
+function makeCell(row, column, ridx, cbs) {
+	if (column.inputter && cbs.isedit(ridx, column.id))
+		return makeCellInput(row, column, ridx, cbs);
+
+	const value = row[column.dataField];
+
+	// handlers
+	const onclick = (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+		cbs.setedit(ridx, column.id, value);
+	}
+	const contents = column.formatter(value, ridx);
+
+	return <td key={column.id} 
+			style={column.style} 
+			onClick={onclick} >
+		{contents}
+	</td>
+}
+
+// return a single table row
+function makeRow(row, columns, ridx, callbacks) {
+	const style = {
+		backgroundColor: (ridx % 2 === 0) ? 'lavender' : 'ivory',
+	}
+	return (
+		<tr key={ridx} style={style}>
+			{columns.map(c => makeCell(row, c, ridx, callbacks))}
+		</tr>
+	);
 }
 
 // construct a table header
@@ -77,75 +142,31 @@ function makeHeader(columns) {
 	)
 }
 
-// construct a single table cell, display or edit
-function makeCell(row, column, ridx, cbs) {
-	const value = row[column.dataField];
-
-	// handlers
-	const onclick = (e) => {
-		e.stopPropagation();
-		cbs.setedit(ridx, column.id, value);
-	}
-	const onchange = (e) => {
-		cbs.setedit(ridx, column.id, e.target.value);
-	}
-	// 
-	const onkeydown = (e) => {
-		//console.log('keydown', e.key);
-		if (e.key === 'Enter') cbs.saveitem(row, column);
-		else if (e.key === 'Escape') cbs.setedit();
-	}
-	const onkeypress = (e) => {
-		//console.log('keypress', e.key);
-		// if (e.key === 'Enter') cbs.saveitem(row, column);
-		// else if (e.key === 'Escape') cbs.setedit();
-	}
-
-	const contents = (column.inputter && cbs.isedit(ridx, column.id)) 
-		? column.inputter(cbs.getnewvalue(), ridx, { 
-				onchange: onchange,
-			}) 
-		: column.formatter(value, ridx);
-
-	return <td key={column.id} 
-			style={column.style} 
-			onClick={onclick}
-			onKeyPress={onkeypress}
-			onKeyDown={onkeydown}>
-		{contents}
-	</td>
-}
-
-// return a single table row
-function makeRow(row, columns, ridx, callbacks) {
-	const style = {
-		backgroundColor: (ridx % 2 === 0) ? 'lavender' : 'ivory',
-	}
-	return (
-		<tr key={ridx} style={style}>
-			{columns.map(c => makeCell(row, c, ridx, callbacks))}
-		</tr>
-	);
-}
-
 // return a table body
-function makeBody(table, istrans, callbacks) {
+function makeBody(table, istrans, cbs) {
 	const style = {
 		tableLayout: 'fixed',
 	};
 	const columns = (istrans) ?  getColumnsTrans(table) : getColumns(table);
 	const rows = (istrans) ? table.tdata : table.rows;
+	const onsubmit = (e) => { 
+		e.preventDefault();
+		cbs.saveitem();
+	}
+
 	return (
-		<Table striped bordered hover responsive size="sm"
-			style={style} 
-			onClick={() => callbacks.setedit()}>
-			<thead>
-				{makeHeader(columns)}
-			</thead>
-			<tbody>
-				{rows.map((r,x) => makeRow(r, columns, x, callbacks)) }
-			</tbody>
-		</Table>
+		<Form onSubmit={onsubmit}>
+			<Table striped bordered hover responsive size="sm"
+				style={style} 
+				>
+				<thead>
+					{makeHeader(columns)}
+				</thead>
+				<tbody>
+					{rows.map((r,x) => makeRow(r, columns, x, cbs)) }
+				</tbody>
+			</Table>
+		</Form>
 	);
 }
 
@@ -167,17 +188,10 @@ export default class extends React.Component {
 		onchange: (e,r,c) => {
 			this.setEdit(r, c, e.target.value);
 		},
+		saveitem: (e) => {
+			this.saveitem();
+		},	
 		getnewvalue: () => this.state.newvalue,
-		saveitem: (row, column) => {
-			this.props.doaction('PUT', { 
-				tableid: this.props.table.tableid, 
-				newrow: {
-					id: row.id,
-					[column.dataField]: this.state.newvalue,
-				}
-			});
-			this.setEdit();
-		},
 	}
 
 	setEdit(ridx, cidx, value) {
@@ -189,6 +203,20 @@ export default class extends React.Component {
 		});
 	}
 	
+	saveitem() {
+		const table = this.props.table;
+		const row = table.rows[this.state.ridx];
+		const field = table.fields[this.state.cidx];
+		this.props.doaction('PUT', { 
+			tableid: table.tableid, 
+			newrow: {
+				id: row.id,
+				[field.fieldid]: this.state.newvalue,
+			}
+		});
+		this.setEdit();
+	}
+
 	render() {
 		return makeBody(this.props.table, this.props.istrans, this.callBacks);
 	}

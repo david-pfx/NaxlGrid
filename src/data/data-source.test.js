@@ -4,6 +4,7 @@ import { exportAllDeclaration } from '@babel/types';
 
 describe('get alls', () => {
   const exps = [
+    ['tests', ['test']],
     ['novels', ['settings', 'comic']],
     ['music', ['album', 'artist', 'track']],
   ];
@@ -16,8 +17,9 @@ describe('get alls', () => {
 test('get home sheets', () => {
   const list = Data.getSheetList();
   //console.log(list);
-  expect(list.length).toEqual(3);
+  expect(list.length).toEqual(4);
   [ [ 'home', 'home' ],
+    [ 'dataset', 'tests' ],
     [ 'dataset', 'novels' ],
     [ 'dataset', 'music', ],
   ].forEach((t,x) => {
@@ -57,35 +59,35 @@ test('get music sheets', () => {
 // test undo redo
 test('add dataset', () => {
   const ids = () => dataStore.dataset_all().map(d => d.datasetid);
-  expect(ids()).toEqual(['novels', 'music']);
-  dataStore.dataset_put({ datasetid: 'test' });
-  expect(ids()).toEqual(['novels', 'music','test']);
+  expect(ids()).toEqual(['tests', 'novels', 'music']);
+  dataStore.dataset_put({ datasetid: 'xxx' });
+  expect(ids()).toEqual(['tests', 'novels', 'music', 'xxx']);
 
   expect(dataStore.undo()).toBeTruthy();
   //expect(dataStore.undo()).toBeFalsy();
-  expect(ids()).toEqual(['novels', 'music']);
+  expect(ids()).toEqual(['tests', 'novels', 'music']);
   
   expect(dataStore.redo()).toBeTruthy();
   expect(dataStore.redo()).toBeFalsy();
-  expect(ids()).toEqual(['novels', 'music','test']);
+  expect(ids()).toEqual(['tests', 'novels', 'music', 'xxx']);
 
   expect(dataStore.undo()).toBeTruthy();
-  expect(ids()).toEqual(['novels', 'music']);
-  dataStore.dataset_put({ datasetid: 'test2' });
-  expect(ids()).toEqual(['novels', 'music','test2']);
+  expect(ids()).toEqual(['tests', 'novels', 'music']);
+  dataStore.dataset_put({ datasetid: 'yyy' });
+  expect(ids()).toEqual(['tests', 'novels', 'music','yyy']);
 });
 
 test('add table', () => {
-  const dsid = 'music';
-  const tables = ['album', 'artist', 'track'];
+  const dsid = 'tests';
+  const tables = ['test'];
   const ids = () => dataStore.table_all(dsid).map(t => t.tableid);
   expect(ids()).toEqual(tables);
   
   ids().forEach(tbid => {
     expect(dataStore.table_get(dsid, tbid).tableid).toEqual(tbid);
   })
-  dataStore.table_put(dsid, { tableid: 'test' });
-  expect(dataStore.table_get(dsid, 'test')).toEqual({ id: 6, tableid: 'test', datasetid: dsid, rows: [] });
+  dataStore.table_put(dsid, { tableid: 'xxx' });
+  expect(dataStore.table_get(dsid, 'xxx')).toEqual({ id: 7, tableid: 'xxx', datasetid: dsid, rows: [] });
 });
 
 test('add row', () => {

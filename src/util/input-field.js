@@ -3,6 +3,7 @@ import React from 'react';
 //import Datepicker from 'react-datepicker';
 
 import Format from '../util/format';
+import Form from 'react-bootstrap/Form';
 
 // construct input field, given data and callback
 // or just return true if an editable field
@@ -19,7 +20,7 @@ export default function(field, value, cbs) {
 	// construct a simple typed input field
 	// make sure value is defined so component is controlled
 	const inputTyped = (type, props) => 
-		<input {...usualProps}
+		<Form.Control {...usualProps}
 			{...props}
 			type={type} 
 			value={value || ''}
@@ -32,11 +33,11 @@ export default function(field, value, cbs) {
 				{o.text}
 			</option>;
 		return (
-			<select {...usualProps}
+			<Form.Control as="select" {...usualProps}
 				value={value} >
 				<option/>
 				{field.list.map(o => option(o))}
-			</select>
+			</Form.Control>
 		)
 	}
 
@@ -57,9 +58,12 @@ export default function(field, value, cbs) {
 		datetime: () => inputDate(),
 		time: () => inputTyped('time'),
 		integer: () => inputTyped('number', { step: 1 }),
-		decimal: () => inputTyped('number', { step: 0.1 }),
-		money: () => inputTyped('number', { step: 0.01 }),
+		decimal: () => inputTyped('number'),
+		money: () => inputTyped('number'),
 		text: () => inputTyped('text'),
+		email: () => inputTyped('email'),
+		url: () => inputTyped('text'),
+		file: () => inputTyped('file'),
 	};
 
 	const f = inputSimple[field.type];
