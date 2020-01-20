@@ -4,8 +4,8 @@ import { exportAllDeclaration } from '@babel/types';
 
 describe('get alls', () => {
   const exps = [
-    ['tests', ['test']],
-    ['novels', ['settings', 'comic']],
+    ['tests', ['test', 'settings']],
+    ['novels', ['comic']],
     ['music', ['album', 'artist', 'track']],
   ];
   expect(dataStore.dataset_all().map(ds => ds.datasetid)).toEqual(exps.map(e => e[0]));
@@ -30,12 +30,10 @@ test('get home sheets', () => {
 
 test('get novels sheets', () => {
   const list = Data.getSheetList('novels');
-  expect(list.length).toBe(5);
+  expect(list.length).toBe(3);
   [ [ 'home', 'home' ],
     [ 'dataset', 'novels' ],
-    [ 'table', 'settings', ],
     [ 'table', 'comic', ],
-    [ 'sheet', 1, ],
   ].forEach((t,x) => {
     expect(list[x].kind).toBe(t[0]);
     //expect(list[x].label).toBe(t[1]);
@@ -79,7 +77,7 @@ test('add dataset', () => {
 
 test('add table', () => {
   const dsid = 'tests';
-  const tables = ['test'];
+  const tables = ['test', 'settings'];
   const ids = () => dataStore.table_all(dsid).map(t => t.tableid);
   expect(ids()).toEqual(tables);
   

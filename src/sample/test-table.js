@@ -12,7 +12,8 @@ const lov_list = [
 
 export default {
 	"tableid": "test",
-	"label": "Test Data",
+	"label": "Testing",
+	"title": "One of Everything",
 	"icon": "test/testing.png",
 	"fields": [
 	{ fieldid: "id", type: "integer", label: "Id", },

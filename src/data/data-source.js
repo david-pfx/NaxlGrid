@@ -74,6 +74,7 @@ export function doAction(action, payload) {
   alert('oops');
 }
 
+// create some kind of new table
 function doNewTable({ datasetid, tableid }) {
   if (tableid === '$dataset') {
     dataStore.dataset_put({

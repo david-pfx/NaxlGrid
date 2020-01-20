@@ -34,6 +34,7 @@ export default class App extends React.Component {
       ...args, 
       datasetid: this.state.dsid 
     });
+    //console.log('doaction setstate');
     this.setState({
       sheet: Data.getSheet(this.state.sel),
     })
