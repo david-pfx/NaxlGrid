@@ -17,6 +17,7 @@ export default {
 	tableid: "track",
 	label: 'Tracks',
 	title: "Music tracks",
+	description: "Individual music tracks belonging to an album",
   icon: "music.png",
 	fields: [
 		{ fieldid: "id", type: "integer", label: "Id", },
@@ -25,5 +26,5 @@ export default {
 		{ fieldid: "length", type: "text", label: "Length", width: 10 },
 		{ fieldid: "genre", type: "lov", label: "Genre", list: genre_list },
 	],
-	rows: track_data.map((row, x) => ({ ...row, id: x+1 })),
+	rows: track_data.map((row, x) => ({ id: x+1, ...row, })),
 }

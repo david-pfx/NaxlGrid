@@ -6,7 +6,7 @@ export default {
   label: 'Settings',
   title: 'Current settings',
   icon: 'test/settings.jpg',
-  comment: 'This is a single row table of settings',
+  description: 'A single row table of settings, can usefully be transposed',
 
   // column information
   fields: [

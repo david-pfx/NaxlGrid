@@ -109,6 +109,7 @@ export default {
     // relative width for type (effectively a percentage)
     relWidth: (type) => {
         return 'integer,boolean'.includes(type) ? 15
+        : 'textmultiline' === type ? 80
         : isNumeric(type) || isDate(type) ? 20 
         : isLookup(type) ? 30
         : 40;

@@ -60,6 +60,7 @@ function createTable(rows, filename) {
 
   // get rid of known extension
   const barename = filename.replace(/[.]csv$/i, '');
+  const idrows = rows.map((row, x) => ({ id: x+1, ...row }));
 
   return {
     tableid: barename.toLowerCase(),
@@ -67,7 +68,8 @@ function createTable(rows, filename) {
     title: titleCase(barename),
     source: filename,
     description: `Created by uploading ${filename}`,
-    fields: fields(rows[0]),
-    rows: rows.map((row, x) => ({ ...row, id: x+1 })),
+    icon: 'table.gif',
+    fields: fields(idrows[0]),
+    rows: idrows,
   }    
 }

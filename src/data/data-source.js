@@ -208,7 +208,7 @@ function getSheetTable(ds, table) {
     label: table.label,
     title: table.title,
     blocks: [
-      { kind: table.transpose ? 'trans' : 'table', title: table.title, table: table },
+      { kind: table.transpose ? 'trans' : 'table', title: table.description, table: table },
   ]}
 }
 

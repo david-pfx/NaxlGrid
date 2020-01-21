@@ -6,6 +6,7 @@ export default {
 	tableid: "album",
 	label: 'Albums',
 	title: "Music Albums",
+	description: "An eclectic collection of music albums chose for their cover art.",
   icon: "cd.png",
 	fields: [
 		{ fieldid: "id", type: "integer", label: "Id", },
@@ -15,5 +16,5 @@ export default {
 		{ fieldid: "description", type: "textmultiline", label: "Description" },
 		{ fieldid: "cover", type: "image", label: "Album Cover" }
 	],
-	rows: album_data.map((row, x) => ({ ...row, id: x+1 })),
+	rows: album_data.map((row, x) => ({ id: x+1, ...row, })),
 }

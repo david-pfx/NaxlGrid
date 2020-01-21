@@ -3,7 +3,8 @@
 export default {
 	tableid: '$table',
 	label: 'Tables',
-	title: `Available tables in dataset`,
+	title: '`Available tables in dataset',
+	description: 'A virtual table constructed to display the tables in a dataset.',
 	icon: 'table.gif',
 	fields: [
 		{ fieldid: 'id', type: 'integer', label: 'Id', width: 10, },
@@ -11,6 +12,7 @@ export default {
 		{ fieldid: 'label', type: 'text', label: 'Label', },
 		{ fieldid: 'title', type: 'text', label: 'Title', },
 		{ fieldid: 'icon', type: 'image', label: 'Icon', },
+		{ fieldid: 'description', type: 'textmultiline', label: 'Description', },
 		{ fieldid: 'fields', type: 'array', label: 'Fields', },
 		{ fieldid: 'rows', type: 'array', label: 'Rows', },
 	],

@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 //import PropTypes from 'prop-types'
 //import { Link } from 'react-router-dom'
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
-import { faFilter, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
+import { faFilter, faSort, faSortUp, faSortDown, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 //import { faCheckSquare, faFilter, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 import Format from '../util/format';
@@ -17,7 +17,7 @@ import Format from '../util/format';
 function getColumns(table) {
 	return table.fields.map((f, colx) => ({
 		id: colx,
-		text: f.label,
+		text: colx > 0 && f.label,
 		dataField: f.fieldid,
 		headerStyle: {
 			backgroundColor: 'tomato',
@@ -29,14 +29,15 @@ function getColumns(table) {
 		style: colx === 0 ? {
 			backgroundColor: 'tomato',
 			fontWeight: 'bold',
+			textAlign: 'center',
 		} : {
 			textAlign: Format.textAlign(f.type),
 		},
 		formatter: value => Format.format(f, value),
 		inputter: colx > 0 && Format.input(f) && ((value,ridx,cbs) => Format.input(f, value, cbs)),
 		validate: value => Format.validate(f.type, value),
-		sort: colx > 0 && 'none',
-		filter: colx > 0 && 'none',
+		sort: 'none',
+		filter: 'none',
 	}));
 }
 
@@ -54,6 +55,7 @@ function getColumnsTrans(table) {
 		style: colx === 0 ? { 
 				backgroundColor: 'tomato',
 				fontWeight: 'bold' ,
+				textAlign: 'center',
 			} : {
 				textAlign: 'left',
 			},
@@ -125,17 +127,18 @@ function makeRow(row, columns, ridx, callbacks) {
 
 // construct a table header
 function makeHeader(columns) {
-	const sorticon = s => s ==='up' ? faSortUp : s === 'down' ? faSortDown : faSort;
-	const filtericon = f => faFilter;
+	//const sorticon = s => s ==='up' ? faSortUp : s === 'down' ? faSortDown : faSort;
+	const menu = c => <FaIcon icon={faEllipsisV} style={{ fontWeight: '100', color: 'gray', float: 'left' }}/>;
+	const sort = c => <FaIcon icon={faSort} style={{ fontWeight: '100', color: 'gray', float: 'right' }}/>;
+	const filter = c => <FaIcon icon={faFilter} style={{ fontWeight: '100', color: 'gray', float: 'right' }}/>;
 	return (
 		<tr>
 			{columns.map((c,x) =>
 				<th id={x} key={x} style={c.headerStyle} onClick={() => {}} >
+					{menu(c)}
 					{c.text}
-					{(c.sort || c.filter) && <div style={{ fontWeight: '100', color: 'gray', float: 'right' }}>
-						{c.sort && <FaIcon icon={sorticon(c.sort)} />}
-						{c.filter && <FaIcon icon={filtericon(c.filter)} />}
-					</div>}
+					{c.sort && sort(c)}
+					{c.filter && filter(c)}
 				</th>
 			)}
 		</tr>

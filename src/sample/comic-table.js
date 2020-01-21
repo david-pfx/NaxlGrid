@@ -24,6 +24,7 @@ export default {
     tableid: 'comic',
     label: 'Comics',
     title: 'Comic novels',
+    description: "An eclectic collection of fiction with great cover art.",
     icon: 'comics.png',
 
     // column information
@@ -46,6 +47,6 @@ export default {
         { fieldid: 'pix', type: 'image', label: 'Cover' },
     ],
 
-    rows: comic_data.map((row, x) => ({ ...row, id: x+1 })),
+    rows: comic_data.map((row, x) => ({ id: x+1, ...row, })),
 }
 

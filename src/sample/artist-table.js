@@ -5,6 +5,7 @@ export default {
 	tableid: "artist",
 	label: 'Artists',
 	title: "Music Artists",
+	description: "People who perform the music in tis collection.",
   icon: "star.png",
 	fields: [
 		{ fieldid: "id", type: "integer", label: "Id", },
@@ -14,5 +15,5 @@ export default {
 		{ fieldid: "photo", type: "image", label: "Photo" },
 		{ fieldid: "description", type: "textmultiline", label: "Description" },
 	],
-	rows: artist_data.map((row, x) => ({ ...row, id: x+1 })),
+	rows: artist_data.map((row, x) => ({ id: x+1, ...row, })),
 }
