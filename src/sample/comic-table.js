@@ -47,6 +47,6 @@ export default {
         { fieldid: 'pix', type: 'image', label: 'Cover' },
     ],
 
-    rows: comic_data.map((row, x) => ({ id: x+1, ...row, })),
+    rows: comic_data,
 }
 

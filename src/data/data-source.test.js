@@ -1,6 +1,9 @@
+// unit tests for data store
+
 import * as Data from './data-source';
+import * as Sheets from "../data/get-sheets";
 import dataStore from './data-store';
-import { exportAllDeclaration } from '@babel/types';
+//import { exportAllDeclaration } from '@babel/types';
 
 describe('get alls', () => {
   const exps = [
@@ -15,7 +18,7 @@ describe('get alls', () => {
 });
 
 test('get home sheets', () => {
-  const list = Data.getSheetList();
+  const list = Sheets.getSheetList();
   //console.log(list);
   expect(list.length).toEqual(4);
   [ [ 'home', 'home' ],
@@ -29,7 +32,7 @@ test('get home sheets', () => {
 });
 
 test('get novels sheets', () => {
-  const list = Data.getSheetList('novels');
+  const list = Sheets.getSheetList('novels');
   expect(list.length).toBe(3);
   [ [ 'home', 'home' ],
     [ 'dataset', 'novels' ],
@@ -41,7 +44,7 @@ test('get novels sheets', () => {
 });
 
 test('get music sheets', () => {
-  const list = Data.getSheetList('music');
+  const list = Sheets.getSheetList('music');
   expect(list.length).toBe(5);
   [ [ 'home' ],
     [ 'dataset', 'music' ],

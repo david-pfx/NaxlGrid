@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 //import PropTypes from 'prop-types'
 //import { Link } from 'react-router-dom'
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
-import { faFilter, faSort, faSortUp, faSortDown, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
+import { faFilter, faSort, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 //import { faCheckSquare, faFilter, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 import Format from '../util/format';

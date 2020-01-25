@@ -10,7 +10,7 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faFileImport, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 
 import ViewTable from './view-table';
 import { importCsv } from '../data/parse-content';
@@ -30,11 +30,12 @@ function renderNote(block, cbs) {
     <Card style={cardStyle}>
       <Card.Title style={subtitleStyle}>
       <Row>
-        <Col>
+        <Col sm="1" />
+        <Col  style={{ textAlign: 'center' }}>
           <Image src={imageUrl + 'document-32.png'} width='20px' />&nbsp;
           {block.title}
         </Col>
-        <Col>
+        <Col sm="1">
           <Button 
             size="sm"
             style={buttonStyle} 
@@ -69,13 +70,23 @@ function renderTable(block, importing, cbs) {
     <Card style={cardStyle}>
       <Card.Title style={subtitleStyle}>
       <Row>
-        <Col>
+        <Col sm="1">
+          { cbs.showFieldHandler &&
+            <Button size="sm"
+              style={{ marginTop: '0.5rem' }}
+              onClick={cbs.showFieldHandler} >
+              <FaIcon icon={faEllipsisV} />
+            </Button>
+          }
+        </Col>
+        <Col style={{ textAlign: 'center' }}>
           <Image 
             src={imageUrl + block.table.icon} 
             width='20px' />
           &nbsp;
           {block.title}
         </Col>
+        <Col sm="1" />
       </Row>
       </Card.Title>
 
@@ -123,6 +134,7 @@ export default class extends React.Component {
 
     const newNoteHandler = () => props.doaction('NEW', { noteid: block.table.tableid });
     const newTableHandler = () => props.doaction('NEW', { tableid: block.table.tableid });
+    const showFieldHandler = () => props.doselect({ kind: 'field', tableid: block.table.tableid });
 
     const importHandler = (importing, file) => {
       console.log('import', importing, file);
@@ -132,6 +144,7 @@ export default class extends React.Component {
           (data) => props.doaction('PUT', { tableid: block.table.tableid, newrow: data }),
           (msg) => alert(msg));
     }
+
 
     switch (block.kind) {
       case 'note':
@@ -143,6 +156,7 @@ export default class extends React.Component {
         return renderTable(block, this.state.importing, { 
           newTableHandler: newTableHandler,
           importHandler: importHandler,
+          showFieldHandler: !block.table.system && showFieldHandler,
           doaction: props.doaction,
         });
       default:

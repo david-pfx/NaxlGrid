@@ -2,6 +2,7 @@ import React from 'react';
 
 import ViewSheet from './view-sheet';
 import * as Data from '../data/data-source';
+import * as Sheets from "../data/get-sheets";
 
 ////////////////////////////////////////////////////////////////////////////////
 // Root component to construct the view and maintain state
@@ -11,21 +12,19 @@ export default class App extends React.Component {
     super(props);
     const sel = { kind: 'home' };
     this.state = {
+      dsid: '$home',
       sel: sel,
-      sheet: Data.getSheet(sel),
+      sheet: Sheets.getSheet(sel),
     }
   }
 
-  componentDidMount() {
-    //this.doSelect(Data.getSheetList()[1]);
-  }
-
   doSelect(sel) {
-    //console.log('sel', sel);
+    console.log('doSelect', sel, 'state', this.state.sel);
+    const newsel = { ...sel, dsid: sel.dsid || this.state.sel.dsid, };
     this.setState({ 
-      dsid: sel.dsid,
-      sel: sel,
-      sheet: Data.getSheet(sel),
+      dsid: newsel.dsid,
+      sel: newsel,
+      sheet: Sheets.getSheet(newsel),
     });
   }
 
@@ -36,21 +35,19 @@ export default class App extends React.Component {
     });
     //console.log('doaction setstate');
     this.setState({
-      sheet: Data.getSheet(this.state.sel),
+      sheet: Sheets.getSheet(this.state.sel),
     })
   }  
   
   render() {
-    //console.log('props', this.props);
-    const selpairs = Data.getSheetList(this.state.dsid).map(s => ({
-      label: s.label, 
-      select: () => this.doSelect(s),
-    }));
     
     //console.log('sellist', sel);
+
+    // note the use of arrow notation to bind this
     return <ViewSheet 
       sheet={this.state.sheet} 
-      doaction={(action, args) => this.doAction(action, args)}
-      selectors={selpairs} />;
+      selectors={Sheets.getSheetList(this.state.dsid)} 
+      doselect={s => this.doSelect(s)} 
+      doaction={(action, args) => this.doAction(action, args)} />;
   }
 }

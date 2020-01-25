@@ -97,13 +97,17 @@ function sheet_put(dsid, sh) {
 
 // put table in dataset, new or merge on id
 function table_put(dsid, tb) {
+  const fixid = a => a ? a.map((row, x) => ({ ...row, id: x+1, })) : [];
+
   const newtb = (tb.id) 
     ? topStack().tables.map(t => t.id === tb.id ? { ...t, ...tb } : t)
     : [ ...topStack().tables, {  
         id: topStack().tables.length + 1,
-        rows: [], 
+        //rows: [], 
         datasetid: dsid,
         ...tb,
+        rows: fixid(tb.rows),
+        fields: fixid(tb.fields),
       } ];
   // validate here
   pushNext({ 

@@ -54,7 +54,7 @@ function createTable(rows, filename) {
     return {
       fieldid: k,
       type: peekType(row[k]),
-      label: titleCase(k),
+      label: titleCase(k.replace('_', ' ')),
     }
   })
 
@@ -67,7 +67,7 @@ function createTable(rows, filename) {
     label: titleCase(barename),
     title: titleCase(barename),
     source: filename,
-    description: `Created by uploading ${filename}`,
+    description: `Created by importing ${filename}`,
     icon: 'table.gif',
     fields: fields(idrows[0]),
     rows: idrows,

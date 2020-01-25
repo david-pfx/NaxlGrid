@@ -38,5 +38,5 @@ export default {
 	{	fieldid: "content", type: "content", label: "Content", }
 ],
 
-rows: test_data.map((row, x) => ({ id: x+1, ...row, })),
+rows: test_data,
 }

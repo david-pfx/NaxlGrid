@@ -16,5 +16,5 @@ export default {
 		{ fieldid: "description", type: "textmultiline", label: "Description" },
 		{ fieldid: "cover", type: "image", label: "Album Cover" }
 	],
-	rows: album_data.map((row, x) => ({ id: x+1, ...row, })),
+	rows: album_data,
 }

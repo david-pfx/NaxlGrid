@@ -6,6 +6,7 @@ export default {
 	title: 'Available datasets',
 	description: 'A virtual table constructed to display the available datasets.',
 	icon: 'table.gif',
+	system: true,
 	fields: [
 		{ fieldid: 'id', type: 'integer', label: 'Id', width: 10, },
 		{ fieldid: 'datasetid', type: 'text', label: 'Dataset Id', },

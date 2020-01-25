@@ -4,57 +4,24 @@
 //import { strict as assert } from 'assert';
 //import assert from 'assert';
 
-import table_table from './table-table';
-import dataset_table from './dataset-table';
+import dataset_table from './pro-dataset-table';
+import table_table from './pro-table-table';
+import field_table from './pro-field-table';
+
+import dataset_data from '../sample/dataset-data';
 import test_table from '../sample/test-table';
 import comic_table from '../sample/comic-table';
 import settings_table from '../sample/settings-table';
-
 import album_table from '../sample/album-table';
 import artist_table from '../sample/artist-table';
 import track_table from '../sample/track-table';
 
 import dataStore from './data-store';
+import { getSheetPair } from './get-sheets';
 
 //require('./assert');
 
 export const setupStore = addAll();
-
-////////////////////////////////////////////////////////////////////////////////
-// exports
-
-// get a list of sheets for home, or for a dataset
-export function getSheetList(dsid) {
-  //assert.ok(dsid);
-  if (!dsid) return [ 
-    { kind: 'home', label: 'Home' },
-    ...dataStore.dataset_all().map(d => ({ 
-      kind: 'dataset', dsid: d.datasetid, label: d.label 
-    })),
-  ];
-
-  const tbs = id => dataStore.table_all(id).sort(t => t.id);
-  const shs = id => dataStore.sheet_all(id);
-  const ds = dataStore.dataset_get(dsid);
-  return [
-    { kind: 'home', label: 'Home' },
-    { kind: 'dataset', dsid: dsid, label: ds.label },
-    ...tbs(dsid).map(t => ({ kind: 'table', dsid: dsid, tableid: t.tableid, label: t.label })),
-    ...shs(dsid).map(s => ({ kind: 'sheet', dsid: dsid, sheetid: s.id, label: s.label })),
-  ];
-}
-
-// get a list by selection from the list
-export function getSheet(args) {
-  //console.log('getSheet', kind, id, dsid);
-  const func = {
-    'home': () => getSheetHome(),
-    'dataset': () => getSheetDataset(dataStore.dataset_get(args.dsid)),
-    'table': () => getSheetTable(dataStore.dataset_get(args.dsid), getConnectedTable(args.dsid, args.tableid)),
-    'sheet': () => dataStore.sheet_get(args.dsid, args.sheetid), // BUG: table may be stale
-  }[args.kind];
-  return (func) ? func() : {};
-}
 
 // available actions
 export function doAction(action, payload) {
@@ -125,31 +92,19 @@ function addAll() {
   const add_tbs = (id, tbs) => tbs.forEach(tb => dataStore.table_put(id, tb));
   const add_shs = (id, shs) => shs.forEach(sh => dataStore.sheet_put(id, sh));
 
-  add_dss([{
-    datasetid: 'tests', label: 'Test', title: 'Test data', description: 'A collection of test data to exercise lots of stuff', 
-    notes: [ 'This is test data contributed to Evolutility.' ],
-  }]);
+  add_dss(dataset_data);
+
   add_tbs('tests', [ test_table, transposeTable(settings_table) ]);
-  add_shs('tests', [getSheetPair(dataStore.dataset_get('tests'), transposeTable(settings_table))]);
-
-  add_dss([{
-    datasetid: 'novels', label: 'Novels', title: 'Comic Novels', description: 'Records and notes on a collection of comic novels', 
-    notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  }]);
   add_tbs('novels', [comic_table]);
-
-  add_dss([{
-    datasetid: 'music', label: 'Music', title: 'Music Collection', description: 'A collection of musical albums, with artist and track', 
-    notes: [ 'This is test data from Evolutility, hence the large number of French language titles.' ],
-  }]);
   add_tbs('music', [ album_table, artist_table, track_table ]);
-
+  
+  add_shs('tests', [ getSheetPair(dataStore.dataset_get('tests'), transposeTable(settings_table)) ]);
   return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // table of datasets
-function getTableDatasets() {
+export function getTableDatasets() {
   return { 
     ...dataset_table,
     rows: dataStore.dataset_all().map(d => ({
@@ -160,7 +115,7 @@ function getTableDatasets() {
 }
 
 // table of tables
-function getTableTables(ds) {
+export function getTableTables(ds) {
   return {
     ...table_table,
     title: `Available tables in dataset ${ds.label}`,
@@ -168,67 +123,19 @@ function getTableTables(ds) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// sheets
-
-// the default start sheet
-function getSheetHome() {
-  const table = getTableDatasets();
+// table of tables
+export function getTableFields(ds, table) {
   return {
-    sheetid: 'home',
-    label: 'Home',
-    title: 'Home',
-    blocks: [
-      { kind: 'note', title: 'No dataset selected.', notes: [ 'Please select a dataset from the list.' ] },
-      { kind: 'table', title: table.title, table: table, },
-    ],
-  }
-}
-
-// construct a sheet for the whole dataset
-function getSheetDataset(ds) {
-  const table = getTableTables(ds);
-  return {
-    sheetid: ds.datasetid,
-    dsid: ds.datasetid,
-    label: ds.label,
-    title: ds.title,
-    blocks: [
-      { kind: 'note', title: ds.description, notes: ds.notes },
-      { kind: 'table', title: table.title, table: table, },
-    ],
-  }
-}
-
-// construct a table sheet for a single table
-function getSheetTable(ds, table) {
-  return {
-    sheetid: table.tableid,
-    dsid: ds.id,
-    label: table.label,
-    title: table.title,
-    blocks: [
-      { kind: table.transpose ? 'trans' : 'table', title: table.description, table: table },
-  ]}
-}
-
-// construct a sheet pair for a single table
-function getSheetPair(ds, table) {
-  return {
-    sheetid: table.tableid,
-    dsid: ds.id,
-    label: table.label + ' x2',
-    title: table.title,
-    blocks: [
-      { kind: 'table', title: 'Regular table', table: table },
-      { kind: 'trans', title: 'Transposed table', table: table },
-  ]}
+    ...field_table,
+    title: `Available fields in table ${table.label}`,
+    rows: table.fields,
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // set up connections between tables for lookups
-function getConnectedTable(dsid, tbid) {
+export function getConnectedTable(dsid, tbid) {
   const table = dataStore.table_get(dsid, tbid);
   table.fields.forEach(f => {
     if (f.type === 'lookup') {

@@ -17,6 +17,8 @@ import ViewBlock from './view-block';
 //
 export default function(props) {
   const sheet = props.sheet;
+  document.title = `Naxl - ${sheet.label}`;
+
   const titleBgColor = 'yellow';
   const sidebarBgColor = 'palegreen';
   const titleStyle = { 
@@ -30,7 +32,12 @@ export default function(props) {
     marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'
   };
 
-  document.title = `Naxl - ${sheet.title}`;
+  const variant = (k) => ({
+      home: 'primary',
+      dataset: 'success',
+      table: 'warning',
+      pair: 'secondary',
+    }[k] || 'danger');
 
   return (
     <Container fluid style={{ lineHeight: 1.2, backgroundColor: titleBgColor }}>
@@ -47,8 +54,9 @@ export default function(props) {
               props.selectors.map((s,x) => 
                 <Row key={x}>
                   <Button block 
+                    variant={variant(s.kind)}
                     style={{ margin: '0.3rem'}} 
-                    onClick={e => s.select() }>
+                    onClick={e => props.doselect(s) }>
                       { s.label }
                   </Button>
                 </Row>) 
@@ -56,8 +64,9 @@ export default function(props) {
         </Col>
         <Col> 
           <Row style={titleStyle}>
-            <Col lg="11">{sheet.title}</Col>
-            <Col>
+            <Col sm="1" />
+            <Col>{sheet.title}</Col>
+            <Col sm="1">
               <Button size="sm"
                 style={buttonStyle} 
                 onClick={e => props.doaction('NEW', { sheet: sheet })}>
@@ -69,6 +78,7 @@ export default function(props) {
             sheet.blocks.map((b,x) => <ViewBlock 
               key={x} 
               block={b} 
+              doselect={props.doselect} 
               doaction={props.doaction} />) 
           }
         </Col>
