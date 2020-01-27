@@ -18,7 +18,7 @@ describe('get alls', () => {
 });
 
 test('get home sheets', () => {
-  const list = Sheets.getSheetList();
+  const list = Sheets.getSheetList('$home');
   //console.log(list);
   expect(list.length).toEqual(4);
   [ [ 'home', 'home' ],
@@ -28,6 +28,20 @@ test('get home sheets', () => {
   ].forEach((t,x) => {
     expect(list[x].kind).toEqual(t[0]);
     //expect(list[x].label).toEqual(t[1]);
+  });
+});
+
+test('get test sheets', () => {
+  const list = Sheets.getSheetList('tests');
+  expect(list.length).toBe(5);
+  [ [ 'home', 'home' ],
+    [ 'dataset', 'test' ],
+    [ 'table', 'test', ],
+    [ 'table', 'settings', ],
+    [ 'sheet', 'settings', ],
+  ].forEach((t,x) => {
+    expect(list[x].kind).toBe(t[0]);
+    //expect(list[x].label).toBe(t[1]);
   });
 });
 
@@ -88,7 +102,7 @@ test('add table', () => {
     expect(dataStore.table_get(dsid, tbid).tableid).toEqual(tbid);
   })
   dataStore.table_put(dsid, { tableid: 'xxx' });
-  expect(dataStore.table_get(dsid, 'xxx')).toEqual({ id: 7, tableid: 'xxx', datasetid: dsid, rows: [] });
+  expect(dataStore.table_get(dsid, 'xxx')).toEqual({ id: 7, tableid: 'xxx', datasetid: dsid, fields: [], rows: [] });
 });
 
 test('add row', () => {

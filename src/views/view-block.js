@@ -93,12 +93,12 @@ function renderTable(block, importing, cbs) {
       <ViewTable 
         table={block.table} 
         istrans={block.kind === 'trans'}
-        doaction={cbs.doaction} />
+        cbUpdate={cbs.updateHandler} />
         
       <Form>
         <Button size="sm"
           style={{ marginTop: '-1rem' }}
-          onClick={cbs.newTableHandler} >
+          onClick={cbs.newRowHandler} >
           <FaIcon icon={faPlus} />
         </Button>
         { block.table.tableid === '$table' && (
@@ -132,9 +132,27 @@ export default class extends React.Component {
     //console.log('view block', props);
     const block = props.block;
 
-    const newNoteHandler = () => props.doaction('NEW', { noteid: block.table.tableid });
-    const newTableHandler = () => props.doaction('NEW', { tableid: block.table.tableid });
-    const showFieldHandler = () => props.doselect({ kind: 'field', tableid: block.table.tableid });
+    const newNoteHandler = () => props.doaction('NEW', { 
+      noteid: block.table.tableid 
+    });
+    const showFieldHandler = () => props.doselect({ 
+      kind: 'field', 
+      tableid: block.table.tableid 
+    });
+    const newRowHandler = () => props.doaction('NEW', { 
+      tableid: block.table.tableid, 
+      parentid: block.table.parentid,
+    });
+    const updateHandler = (row, fieldid, newvalue) => {
+      props.doaction('PUT', { 
+        tableid: block.table.tableid, 
+        parentid: block.table.parentid,
+        newrow: {
+          id: row.id,
+          [fieldid]: newvalue,
+        }
+      });
+    }
 
     const importHandler = (importing, file) => {
       console.log('import', importing, file);
@@ -145,7 +163,6 @@ export default class extends React.Component {
           (msg) => alert(msg));
     }
 
-
     switch (block.kind) {
       case 'note':
         return renderNote(block, { 
@@ -154,10 +171,10 @@ export default class extends React.Component {
       case 'table':
       case 'trans':
         return renderTable(block, this.state.importing, { 
-          newTableHandler: newTableHandler,
+          newRowHandler: newRowHandler,
           importHandler: importHandler,
           showFieldHandler: !block.table.system && showFieldHandler,
-          doaction: props.doaction,
+          updateHandler: updateHandler,
         });
       default:
         return <div>bad kind</div>;

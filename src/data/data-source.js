@@ -1,8 +1,6 @@
 // Wrapper for data sources
 
-//import * as assert from 'assert-plus';
-//import { strict as assert } from 'assert';
-//import assert from 'assert';
+import assert from 'assert';
 
 import dataset_table from './pro-dataset-table';
 import table_table from './pro-table-table';
@@ -19,69 +17,51 @@ import track_table from '../sample/track-table';
 import dataStore from './data-store';
 import { getSheetPair } from './get-sheets';
 
-//require('./assert');
-
 export const setupStore = addAll();
 
 // available actions
 export function doAction(action, payload) {
-  console.log(`do action: ${action}, payload: ${JSON.stringify(payload)}`);
-  if (action === 'NEW') {
-    if (payload.tableid)
-      return doNewTable(payload);
-    if (payload.sheet)
-      return doNewSheet(payload);
-  } else if (action === 'PUT') {
-    if (payload.tableid === '$dataset')
-      return dataStore.dataset_put(payload.newrow);
-    if (payload.tableid === '$table')
-      return dataStore.table_put(payload.datasetid, payload.newrow);
-    return dataStore.row_put(payload.datasetid, payload.tableid, payload.newrow);
-  }
-  alert('oops');
-}
-
-// create some kind of new table
-function doNewTable({ datasetid, tableid }) {
-  if (tableid === '$dataset') {
-    dataStore.dataset_put({
-      datasetid: 'new-dataset', 
-      label: '<new-dataset>', 
-      title: 'New Dataset', 
-      description: '', 
-      notes: [],
-    });
-  } else if (tableid === '$table') {
-    //assert.ok(dsid);
-    dataStore.table_put(datasetid, {
+  console.log('do action:', action, 'payload', payload);
+  const fntable = {
+    NEW$dataset: () => dataStore.dataset_put({
+        datasetid: 'new-dataset', 
+        label: '<new-dataset>', 
+        title: 'New Dataset', 
+        description: '', 
+        notes: [],
+      }),
+    NEW$table: () => dataStore.table_put(payload.datasetid, {
       tableid: 'new-table',
       label: '<new-table>',
       title: 'New Table',
       icon: 'table.gif',
       fields: [
-        { fieldid: "id", type: "integer", label: "Id", },
+        { fieldid: "id", type: "integer", label: "Id", width: 10, },
         { fieldid: "field1", type: "text", label: "Field 1", },
         { fieldid: "field2", type: "text", label: "Field 2", },
       ],
       rows: [],
-    });
-  } else {
-    //assert.ok(dsid);
-    //assert.ok(tableid);
-    const table = dataStore.table_get(datasetid, tableid);
-    const newrow = table.fields.reduce((acc, f) => ({ ...acc, [f.id]: '' }), {});
-    console.log('table', table, 'newrow', newrow);
-    dataStore.row_put(datasetid, tableid, newrow);
-  } 
-}
-
-function doNewSheet({ dsid }) {
-  dataStore.sheet_put(dsid, {
-    sheetid: 'new-sheet',
-    label: '<new-sheet>',
-    title: 'New Sheet',
-    blocks: [],
-  });
+    }),
+    NEW$sheet: () => dataStore.sheet_put(payload.datasetid, { 
+        sheetid: 'new-sheet',
+        label: '<new-sheet>',
+        title: 'New Sheet',
+        blocks: [],
+      }),
+    NEW$field: () => dataStore.field_put(payload.datasetid, payload.parentid, { 
+        label: '<new-field>', 
+        type: 'text' 
+      }),
+    NEW$row: () => dataStore.row_put(payload.datasetid, payload.tableid, { }),
+    PUT$dataset: () => dataStore.dataset_put(payload.newrow),
+    PUT$sheet: () => dataStore.sheet_put(payload.datasetid, payload.newrow),
+    PUT$table: () => dataStore.table_put(payload.datasetid, payload.newrow),
+    PUT$field: () => dataStore.field_put(payload.datasetid, payload.parentid, payload.newrow),
+    PUT$row: () => dataStore.row_put(payload.datasetid, payload.tableid, payload.newrow),
+  };
+  const fn = fntable[action + payload.tableid] || fntable[action + '$row'];
+  assert.ok(fn, `action: ${action} tableid: ${payload.tableid}`)
+  return fn ? fn() : alert('oops');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +108,7 @@ export function getTableFields(ds, table) {
   return {
     ...field_table,
     title: `Available fields in table ${table.label}`,
+    parentid: table.tableid,
     rows: table.fields,
   };
 }

@@ -1,7 +1,9 @@
+import assert from "assert";
+
 // data store holding all data state
 // time-travelling immutable
 
-export default { undo, redo, dataset_all, dataset_get, dataset_put, sheet_all, sheet_get, sheet_put, table_all, table_get, table_put, row_put };
+export default { undo, redo, dataset_all, dataset_get, dataset_put, sheet_all, sheet_get, sheet_put, table_all, table_get, table_put, row_put, field_put };
 
 const initialState = {
   datasets: [],
@@ -55,6 +57,7 @@ function table_get(dsid, tbid) {
 }
 
 function sheet_all(dsid) {
+  //console.log(topStack().sheets);
   return topStack().sheets.filter(t => t.datasetid === dsid);
 }
 
@@ -80,13 +83,13 @@ function dataset_put(ds) {
 
 // put sheet in dataset, new or merge on id
 function sheet_put(dsid, sh) {
+  //console.log('sheet put', dsid, sh);
   const newsh = (sh.id) 
     ? topStack().sheets.map(s => s.id === sh.id ? { ...s, ...sh } : s)
     : [ ...topStack().sheets, {  
         id: topStack().sheets.length + 1,
-        rows: [], 
-        datasetid: dsid,
         ...sh,
+        datasetid: dsid,
       } ];
   // validate here
   pushNext({ 
@@ -124,5 +127,16 @@ function row_put(dsid, tbid, row) {
     ? [ ...table.rows.map(r => r.id === row.id ? { ...r, ...row } : r) ]
     : [ ...table.rows, { id: table.rows.length + 1, ...row } ];
   table_put(dsid, { ...table, rows: newrows });
+}
+
+// put field to table in dataset, new or merge on id
+function field_put(dsid, tbid, field) {
+  assert.ok(dsid && tbid && field, `dsid && tbid && field ${dsid} ${tbid} ${field}`);
+  //console.log('field_put', dsid, tbid, field);
+  const table = table_get(dsid, tbid);
+  const newfields = (field.id) 
+    ? [ ...table.fields.map(f => f.id === field.id ? { ...f, ...field } : f) ]
+    : [ ...table.fields, { id: table.fields.length + 1, ...field } ];
+  table_put(dsid, { ...table, fields: newfields });
 }
 

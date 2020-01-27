@@ -180,7 +180,7 @@ export default class extends React.Component {
     super(props);
     this.state = { }
 	}
-	
+
 	callBacks = { 
 		isedit: (r,c) => r === this.state.ridx && c === this.state.cidx,
 		setedit: (r,c,v) => this.setEdit(r,c,v),
@@ -210,13 +210,8 @@ export default class extends React.Component {
 		const table = this.props.table;
 		const row = table.rows[this.state.ridx];
 		const field = table.fields[this.state.cidx];
-		this.props.doaction('PUT', { 
-			tableid: table.tableid, 
-			newrow: {
-				id: row.id,
-				[field.fieldid]: this.state.newvalue,
-			}
-		});
+		console.log('saveitem', table, row, field);
+		this.props.cbUpdate(row, field.fieldid, this.state.newvalue);
 		this.setEdit();
 	}
 

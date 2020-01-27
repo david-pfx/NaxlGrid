@@ -29,7 +29,7 @@ export default function(props) {
     backgroundColor: sidebarBgColor 
   };
   const buttonStyle = { 
-    marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'
+    marginRight: '0.3rem', marginTop: '0.3rem', float: 'left'
   };
 
   const variant = (k) => ({
@@ -56,7 +56,7 @@ export default function(props) {
                   <Button block 
                     variant={variant(s.kind)}
                     style={{ margin: '0.3rem'}} 
-                    onClick={e => props.doselect(s) }>
+                    onClick={e => props.doselect(s)}>
                       { s.label }
                   </Button>
                 </Row>) 
@@ -64,15 +64,15 @@ export default function(props) {
         </Col>
         <Col> 
           <Row style={titleStyle}>
-            <Col sm="1" />
-            <Col>{sheet.title}</Col>
-            <Col sm="1">
+            <Col sm="1" >
               <Button size="sm"
                 style={buttonStyle} 
-                onClick={e => props.doaction('NEW', { sheet: sheet })}>
+                onClick={e => props.doaction('NEW', { tableid: '$sheet' })}>
                 <FaIcon icon={faPlus} />
               </Button>
             </Col>
+            <Col>{sheet.title}</Col>
+            <Col sm="1" />
           </Row>
           { 
             sheet.blocks.map((b,x) => <ViewBlock 

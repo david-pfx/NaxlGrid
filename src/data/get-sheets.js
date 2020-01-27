@@ -2,27 +2,29 @@
 
 import * as Data from './data-source';
 import dataStore from './data-store';
+import assert from 'assert';
 
 ////////////////////////////////////////////////////////////////////////////////
 // exports
 // get a list of sheets for home, or for a dataset
 export function getSheetList(dsid) {
-  //assert.ok(dsid);
-  if (dsid == '$home')
+  assert.ok(dsid, `dsid ${dsid}`);
+  if (dsid === '$home')
     return [
-      { kind: 'home', label: 'Home', dsid: '$home' },
+      { kind: 'home', label: 'Home', datasetid: '$home' },
       ...dataStore.dataset_all().map(d => ({
-        kind: 'dataset', label: d.label, dsid: d.datasetid,
+        kind: 'dataset', label: d.label, datasetid: d.datasetid,
       })),
     ];
   const tbs = id => dataStore.table_all(id).sort(t => t.label);
   const shs = id => dataStore.sheet_all(id);
   const ds = dataStore.dataset_get(dsid);
+  assert.ok(ds, `ds ${ds}`);
   return [
-    { kind: 'home', label: 'Home', dsid: '$home' },
-    { kind: 'dataset', label: ds.label, dsid: dsid, },
-    ...tbs(dsid).map(t => ({ kind: 'table', label: t.label, dsid: dsid, tableid: t.tableid, })),
-    ...shs(dsid).map(s => ({ kind: 'sheet', label: s.label, dsid: dsid, sheetid: s.id, })),
+    { kind: 'home', label: 'Home', datasetid: '$home' },
+    { kind: 'dataset', label: ds.label, datasetid: dsid, },
+    ...tbs(dsid).map(t => ({ kind: 'table', label: t.label, datasetid: dsid, tableid: t.tableid, })),
+    ...shs(dsid).map(s => ({ kind: 'sheet', label: s.label, datasetid: dsid, sheetid: s.id, })),
   ];
 }
 
@@ -31,10 +33,10 @@ export function getSheet(args) {
   //console.log('getSheet', kind, id, dsid);
   const func = {
     'home': () => getSheetHome(),
-    'dataset': () => getSheetDataset(dataStore.dataset_get(args.dsid)),
-    'table': () => getSheetTable(dataStore.dataset_get(args.dsid), Data.getConnectedTable(args.dsid, args.tableid)),
-    'field': () => getSheetTableField(dataStore.dataset_get(args.dsid), Data.getConnectedTable(args.dsid, args.tableid)),
-    'sheet': () => dataStore.sheet_get(args.dsid, args.sheetid),
+    'dataset': () => getSheetDataset(dataStore.dataset_get(args.datasetid)),
+    'table': () => getSheetTable(dataStore.dataset_get(args.datasetid), Data.getConnectedTable(args.datasetid, args.tableid)),
+    'field': () => getSheetTableField(dataStore.dataset_get(args.datasetid), Data.getConnectedTable(args.datasetid, args.tableid)),
+    'sheet': () => dataStore.sheet_get(args.datasetid, args.sheetid),
   }[args.kind];
   return (func) ? func() : {};
 }
@@ -50,7 +52,7 @@ export function getSheetHome() {
     kind: 'home',
     title: 'Home',
     blocks: [
-      { kind: 'note', title: 'No dataset selected.', notes: ['Please select a dataset from the list.'] },
+      { kind: 'note', title: 'No dataset selected.', notes: ['Please select a dataset from the list.'], },
       { kind: 'table', title: table.title, table: table, },
     ],
   };
@@ -61,12 +63,12 @@ export function getSheetDataset(ds) {
   const table = Data.getTableTables(ds);
   return {
     sheetid: ds.datasetid,
-    dsid: ds.datasetid,
+    datasetid: ds.datasetid,
     label: ds.label,
     kind: 'dataset',
     title: ds.title,
     blocks: [
-      { kind: 'note', title: ds.description, notes: ds.notes },
+      { kind: 'note', title: ds.description, notes: ds.notes, },
       { kind: 'table', title: table.title, table: table, },
     ],
   };
@@ -76,12 +78,12 @@ export function getSheetDataset(ds) {
 export function getSheetTable(ds, table) {
   return {
     sheetid: table.tableid,
-    dsid: ds.id,
+    datasetid: ds.id,
     label: table.label,
     kind: 'table',
     title: table.title,
     blocks: [
-      { kind: table.transpose ? 'trans' : 'table', title: table.description, table: table },
+      { kind: table.transpose ? 'trans' : 'table', title: table.description, table: table, },
     ]
   };
 }
@@ -90,13 +92,13 @@ export function getSheetTable(ds, table) {
 export function getSheetPair(ds, table) {
   return {
     sheetid: table.tableid,
-    dsid: ds.id,
+    datasetid: ds.datasetid,
     label: table.label + ' x2',
     kind: 'pair',
     title: table.title,
     blocks: [
-      { kind: 'table', title: 'Regular table', table: table },
-      { kind: 'trans', title: 'Transposed table', table: table },
+      { kind: 'table', title: 'Regular table', table: table, },
+      { kind: 'trans', title: 'Transposed table', table: table, },
     ]
   };
 }
@@ -109,7 +111,7 @@ export function getSheetTableField(ds, table) {
     ...st,
     kind: 'field',
     blocks: [
-      { kind: 'table', title: st.title, table: tf },
+      { kind: 'table', title: tf.title, table: tf, },
       ...st.blocks,
     ],
   };

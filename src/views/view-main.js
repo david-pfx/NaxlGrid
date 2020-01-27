@@ -3,6 +3,7 @@ import React from 'react';
 import ViewSheet from './view-sheet';
 import * as Data from '../data/data-source';
 import * as Sheets from "../data/get-sheets";
+import assert from 'assert';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Root component to construct the view and maintain state
@@ -12,7 +13,7 @@ export default class App extends React.Component {
     super(props);
     const sel = { kind: 'home' };
     this.state = {
-      dsid: '$home',
+      datasetid: '$home',
       sel: sel,
       sheet: Sheets.getSheet(sel),
     }
@@ -20,18 +21,22 @@ export default class App extends React.Component {
 
   doSelect(sel) {
     console.log('doSelect', sel, 'state', this.state.sel);
-    const newsel = { ...sel, dsid: sel.dsid || this.state.sel.dsid, };
+    const newsel = { 
+      ...sel, 
+      datasetid: sel.datasetid || this.state.sel.datasetid, 
+    };
     this.setState({ 
-      dsid: newsel.dsid,
+      datasetid: newsel.datasetid,
       sel: newsel,
       sheet: Sheets.getSheet(newsel),
     });
   }
 
+  // add dataset id to action, do it, then reload sheet
   doAction(action, args) {
     Data.doAction(action, { 
       ...args, 
-      datasetid: this.state.dsid 
+      datasetid: this.state.datasetid 
     });
     //console.log('doaction setstate');
     this.setState({
@@ -40,13 +45,10 @@ export default class App extends React.Component {
   }  
   
   render() {
-    
-    //console.log('sellist', sel);
-
     // note the use of arrow notation to bind this
     return <ViewSheet 
       sheet={this.state.sheet} 
-      selectors={Sheets.getSheetList(this.state.dsid)} 
+      selectors={Sheets.getSheetList(this.state.datasetid)} 
       doselect={s => this.doSelect(s)} 
       doaction={(action, args) => this.doAction(action, args)} />;
   }
