@@ -22,7 +22,7 @@ const cardStyle = {
   marginTop: '0.5rem', 
 };
 const subtitleStyle = { fontStyle: 'bold', fontSize: '1.2rem' };
-const buttonStyle = { marginRight: '0.3rem', marginTop: '0.3rem', float: 'right'};
+const buttonStyle = { marginRight: '0.3rem', marginTop: '0.3rem', float: 'left'};
 
 // view a note block
 function renderNote(block, cbs) {
@@ -30,19 +30,21 @@ function renderNote(block, cbs) {
     <Card style={cardStyle}>
       <Card.Title style={subtitleStyle}>
       <Row>
-        <Col sm="1" />
-        <Col  style={{ textAlign: 'center' }}>
-          <Image src={imageUrl + 'document-32.png'} width='20px' />&nbsp;
-          {block.title}
-        </Col>
-        <Col sm="1">
-          <Button 
+        <Col sm="1" >
+          { // button to create a new note
+            false && <Button 
             size="sm"
             style={buttonStyle} 
             onClick={cbs.newNoteHandler} >
               <FaIcon icon={faPlus} />
             </Button>
+          }
         </Col>
+        <Col  style={{ textAlign: 'center' }}>
+          <Image src={imageUrl + 'document-32.png'} width='20px' />&nbsp;
+          {block.title}
+        </Col>
+        <Col sm="1" />
         </Row>
       </Card.Title>
       {block.notes.map((note, x) =>

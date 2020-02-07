@@ -65,11 +65,13 @@ export default function(props) {
         <Col> 
           <Row style={titleStyle}>
             <Col sm="1" >
-              <Button size="sm"
-                style={buttonStyle} 
-                onClick={e => props.doaction('NEW', { tableid: '$sheet' })}>
-                <FaIcon icon={faPlus} />
-              </Button>
+              { // button to create new sheet
+                false && <Button size="sm"  //xxx
+                  style={buttonStyle} 
+                  onClick={e => props.doaction('NEW', { tableid: '$sheet' })}>
+                  <FaIcon icon={faPlus} />
+                </Button>
+              }
             </Col>
             <Col>{sheet.title}</Col>
             <Col sm="1" />

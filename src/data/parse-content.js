@@ -36,7 +36,7 @@ function peekType(value) {
     { regex: /^(-|\+)?[$](\d+|\d+[.]\d*|[.]\d+)$/, type: 'money' },
     { regex: /^\d\d\d\d-\d\d-\d\d/, type: 'date' },
     { regex: /^\d\d\d\d\/\d\d\/\d\d/, type: 'date' },
-    { regex: /\n/, type: 'textmultiline' },
+    { regex: /\n/, type: 'multiline' },
     { regex: /.*/, type: 'text' },
   ]
   let match = retable.find(t => t.regex.test(value))

@@ -12,7 +12,7 @@ export default {
 		{ fieldid: 'datasetid', type: 'text', label: 'Dataset Id', },
 		{ fieldid: 'label', type: 'text', label: 'Label', },
 		{ fieldid: 'title', type: 'text', label: 'Title', },
-		{ fieldid: 'description', type: 'textmultiline', label: 'Description', },
+		{ fieldid: 'description', type: 'multiline', label: 'Description', },
 		{ fieldid: 'notes', type: 'array', label: 'Notes', },
 		{ fieldid: 'tables', type: 'array', label: 'Tables', },
 	],

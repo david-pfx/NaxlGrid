@@ -13,7 +13,7 @@ export default {
 		{ fieldid: 'label', type: 'text', label: 'Label', },
 		{ fieldid: 'title', type: 'text', label: 'Title', },
 		{ fieldid: 'icon', type: 'image', label: 'Icon', },
-		{ fieldid: 'description', type: 'textmultiline', label: 'Description', },
+		{ fieldid: 'description', type: 'multiline', label: 'Description', },
 		{ fieldid: 'fields', type: 'array', label: 'Fields', },
 		{ fieldid: 'rows', type: 'array', label: 'Rows', },
 	],

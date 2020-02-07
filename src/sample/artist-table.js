@@ -13,7 +13,7 @@ export default {
 		{ fieldid: "url", type: "url", label: "Web site" },
 		{ fieldid: "url_wiki", type: "url_wiki", label: "Wikipedia" },
 		{ fieldid: "photo", type: "image", label: "Photo" },
-		{ fieldid: "description", type: "textmultiline", label: "Description" },
+		{ fieldid: "description", type: "multiline", label: "Description" },
 	],
 	rows: artist_data,
 }

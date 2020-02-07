@@ -1,5 +1,7 @@
 // template for table of fields
 
+import Format from '../util/format';
+
 export default {
 	tableid: '$field',
 	label: 'Fields',
@@ -10,7 +12,7 @@ export default {
 	fields: [
 		{ fieldid: 'id', type: 'integer', label: 'Id', width: 10, },
 		{ fieldid: 'label', type: 'text', label: 'Label', },
-		{ fieldid: 'type', type: 'text', label: 'Type', },
+		{ fieldid: 'type', type: 'list', label: 'Type', list: Format.typelist() },
 		{ fieldid: 'fieldid', type: 'text', label: 'Field Id', },
 		{ fieldid: 'width', type: 'integer', label: 'Width', },
 	],

@@ -27,19 +27,34 @@ export default function(field, value, cbs) {
 		/>;
 
 	// construct select input field
-	const inputSelect = () => {
-		const option = o => 
-			<option key={o.id} value={''+o.id}>
-				{o.text}
+	const inputSelect = (values, texts) => {
+		//console.log('inputsel', values, texts);
+		const option = (v,t) => 
+			<option key={v} value={v}>
+				{t}
 			</option>;
 		return (
 			<Form.Control as="select" {...usualProps}
 				value={value} >
 				<option/>
-				{field.list.map(o => option(o))}
+				{values.map((v,x) => option(values[x]+'',texts[x]))}
 			</Form.Control>
 		)
 	}
+
+	// const inputSelect = () => {
+	// 	const option = o => 
+	// 		<option key={o.id} value={''+o.id}>
+	// 			{o.text}
+	// 		</option>;
+	// 	return (
+	// 		<Form.Control as="select" {...usualProps}
+	// 			value={value} >
+	// 			<option/>
+	// 			{field.list.map(o => option(o))}
+	// 		</Form.Control>
+	// 	)
+	// }
 
 	// construct date input field
 	const inputDate = () => inputTyped('date');
@@ -49,11 +64,13 @@ export default function(field, value, cbs) {
 		// 	/>
 		// </React.Fragment>;
 
-  const inputSimple = {
+  const inputters = {
 		boolean: () => <input {...usualProps} type="checkbox" checked={value ? true : false} />,
-		textmultiline: () => <textarea {...usualProps} value={Format.format(field, value)} />,
-		lov: () => inputSelect(),
-		list: () => inputSelect(),
+		multiline: () => <textarea {...usualProps} value={Format.format(field, value)} />,
+		lov: () => inputSelect(field.list.map(o => o.id), field.list.map(o => o.text)),
+		list: () => inputSelect(field.list, field.list),
+		// lov: () => inputSelect(),
+		// list: () => inputSelect(),
 		date: () => inputDate(),
 		datetime: () => inputDate(),
 		time: () => inputTyped('time'),
@@ -66,7 +83,5 @@ export default function(field, value, cbs) {
 		file: () => inputTyped('file'),
 	};
 
-	const f = inputSimple[field.type];
-	return f && f();
-	//return (value === null || value === undefined) ? !!f : f();
+	return inputters[field.type] && inputters[field.type]();
 }

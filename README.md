@@ -1,68 +1,43 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# NaxlGrid
 
-## Available Scripts
+This project is an in-browser data manager for maintaining personal tabular data.
+It has been created as a new project, but shares some code with Naxl-UI.
+Naxl is a Personal Database Manager for no-coders. Not Another eXceL.
 
-In the project directory, you can run:
+The aim is to produce a web-based tool that anyone can use to create and manage databases (sets of tables) for their own use.
+The target user is someone with a degree of technical skill but no specific programming ability. 
+Anyone who can create and edit an Excel spreadsheet should qualify.
 
-### `npm start`
+The focus is on the ability to store and retrieve personally useful data from a variety of sources in a variety of relevant formats. 
+It is not about transactional updates, detailed validation or multi-user access.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The technology used should be state of the art, hence the choice of JavaScript, React, Express, JSON and NoSQL.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Installation
 
-### `npm test`
+Simply:
+ - Download or clone the repo from GitHub.
+ - `npm install` to install dependencies.
+ - `npm start` to run the UI project from a local server.
+ - optionally `npm test` to run the unit testing. There is a Windows batch file that combines the above.
+  - Browse to [http://localhost:30002/](http://localhost:3000/) if it doesn't start automatically.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Demonstration
 
-### `npm run build`
+The initial browser displays a menu of sample data. It also shows the current locale, obtained from the browser. You may need to configure that.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+A dataset is a collection of data tables. You can click the '+' buttons to add a new dataset, a new table, or a new row or field in a table.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+You can upload a CSV file to create a new table in a dataset. A sample file called 'member.csv' can be found in the 'test' directory.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The 'vertical ellipsis' button exposes the fields of a table for editing. The table is live.
 
-### `npm run eject`
+## Todo
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Store to a data table
+- delete things: dataset, table, row, field
+- Upload new database tables from XLS or JSON.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## License
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+TBD

@@ -43,7 +43,7 @@ export default {
         { fieldid: 'finished', type: 'boolean', label: 'Finished' },
         { fieldid: 'url_bdfugue', type: 'url', label: 'BDFugue' },
         { fieldid: 'url_amazon', type: 'url', width: 38, label: 'Amazon' },
-        { fieldid: 'notes', type: 'textmultiline', label: 'Notes' },
+        { fieldid: 'notes', type: 'multiline', label: 'Notes' },
         { fieldid: 'pix', type: 'image', label: 'Cover' },
     ],
 

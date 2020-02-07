@@ -3,7 +3,7 @@ import React from 'react';
 import ViewSheet from './view-sheet';
 import * as Data from '../data/data-source';
 import * as Sheets from "../data/get-sheets";
-import assert from 'assert';
+//import assert from 'assert';
 
 ////////////////////////////////////////////////////////////////////////////////
 // Root component to construct the view and maintain state
